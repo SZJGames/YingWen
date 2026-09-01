@@ -681,25 +681,140 @@ function loop() {
     requestAnimationFrame(loop);
 }
 loop();
-// ===================== 可自行修改的抽取配置 =====================
+
+// =====================【全部物品权重集中在这里修改！简单易懂】=====================
+/*
+权重说明：
+数字越大抽到概率越高；基准=1；设置0=不会抽出来
+例："M4A1突击步枪": 5  代表M4概率是普通物品(1)的5倍
+*/
+const ALL_ITEM_WEIGHTS = {
+    // --------武器权重--------
+    "M4A1突击步枪": 2,
+    "RM277突击步枪": 2,
+    "K416突击步枪": 2,
+    "AKM突击步枪": 2,
+    "KC17": 2,
+    "AK-12突击步枪": 2,
+    "SCAR-H战斗步枪": 2,
+    "腾龙突击步枪": 2,
+    "QBZ-95-1": 2,
+    "AUG突击步枪": 2,
+    "G3战斗步枪": 2,
+    "Vector冲锋枪":2,
+    "P90冲锋枪":2,
+    "MP5冲锋枪":2,
+    "MP7冲锋枪":2,
+    "UZI冲锋枪":2,
+    "野牛冲锋枪":2,
+    "QCQ171冲锋枪":2,
+    "SVCH精确射手步枪":2,
+    "Min-14":2,
+    "SVD射手步枪":2,
+    "SKS射手步枪":2,
+    "VSS射手步枪":2,
+    "SV-98狙击枪":2,
+    "R93狙击枪":2,
+    "M700狙击枪":2,
+    "PKM通用机枪":2,
+    "M249轻机枪":2,
+    "QJB-201机枪":2,
+    "M870霰弹枪":2,
+    "FS-12霰弹枪":2,
+    "M1014霰弹枪":2,
+    "S12K霰弹枪":2,
+    "725双管霰弹枪":2,
+    "G18手枪":2,
+    "沙漠之鹰":2,
+    "93R手枪":2,
+    ".357左轮":2,
+    //扩展武器库
+    "M14":2,
+    "SR-25射手步枪":2,
+    "巴雷特":1,
+    "AWM狙击枪":1,
+    "AS‑Val巨浪":2,
+    "M7战斗步枪":2,
+    "ASh-12战斗步枪":2,
+
+    // --------头盔权重--------
+    "老式钢盔(1级)":3,
+    "安保头盔(1级)":3,
+    "奔尼帽(1级)":3,
+    "户外棒球帽(1级)":3,
+    "H01战术头盔(2级)":3,
+    "DRO战术头盔(2级)":3,
+    "复古摩托头盔(2级)":3,
+    "MC 防弹头盔(2级)":3,
+    "防暴头盔(3级)":3,
+    "DAS 防弹头盔(3级)":3,
+    "H07战术头盔(3级)":3,
+    "MC201防弹头盔(3级)":3,
+    "D6 战术头盔(4级)":2,
+    "MHS战术头盔(4级)":2,
+    "GT1战术头盔(4级)":2,
+    "DICH训练头盔(4级)":2,
+    "Mask-1铁壁头盔(5级)":0.8,
+    "H09 防暴头盔(5级)":0.8,
+    "GN 重型头盔(5级)":0.8,
+    "GN久战重型夜视头盔(5级)":0.8,
+    "DICH-1战术头盔(5级)":0.8,
+    "GN 重型夜视头盔(5级)":0.8,
+    "不要头【我很猛】":0.3, //彩蛋头盔
+
+    // --------护甲权重--------
+    "摩托马甲(1级)":3,
+    "安保防弹衣(1级)":3,
+    "轻型防弹衣(1级)":3,
+    "简易防刺服(2级)":3,
+    "TG战术防弹衣(2级)":3,
+    "通用战术背心(2级)":3,
+    "Hvk快拆防弹衣(3级)":3,
+    "制式防弹背心(3级)":3,
+    "TG-H防弹衣(3级)":3,
+    "射手战术背心(3级)":3,
+    "武士防弹背心(4级)":2,
+    "突击手防弹背心(4级)":2,
+    "DT-AVS防弹衣(4级)":2,
+    "HMP特勤防弹衣(4级)":2,
+    "MK-2战术背心(4级)":2,
+    "Hvk-2防弹衣(5级)":0.8,
+    "精英防弹背心(5级)":0.8,
+    "FS复合防弹衣(5级)":0.8,
+    "重型突击背心(5级)":0.8,
+    "不要甲【我很猛】":0.3, //彩蛋护甲
+
+    // --------干员权重--------
+    "红狼":1,
+    "无名":1,
+    "威龙":1,
+    "疾风":1,
+    "牧羊人":1,
+    "液氮":1,
+    "乌鲁鲁":1,
+    "深蓝":1,
+    "比特":1,
+    "蜂医":1,
+    "蛊":1,
+    "蝶":1,
+    "露娜":1,
+    "银翼":1,
+    "骇爪":1,
+
+    // --------地图权重--------
+    "零号大坝-机密":1,
+    "长弓溪谷-机密":1,
+    "巴克什-机密":1,
+    "航天基地-机密":1,
+    "AZ3核电站-机密":1,
+    "巴克什-绝密":0.8,
+    "航天基地-绝密":0.8,
+    "潮汐监狱-绝密":0.8
+};
+
+// 旧全局配置（保留重复惩罚，物品等级倍率现在失效，全部交给上面ALL_ITEM_WEIGHTS）
 const DRAW_CONFIG = {
-    armorLevelWeight: {
-        0: 0.6, // 0级彩蛋权重，在这里修改大小
-        1: 2,
-        2: 2,
-        3: 9,
-        4: 2,
-        5: 0.5
-    },
-    weaponCategoryWeight: {
-        rifle: 5,
-        smg: 3,
-        shotgun: 2,
-        sniper: 3,
-        lmg: 2,
-        pistol: 1
-    },
-    repeatPenalty: 0.3
+    repeatPenalty: 0.3 //上一次抽到的物品本次权重乘0.3，防止连续重复
 };
 // ==============================================================
 const weaponList = [
@@ -722,13 +837,12 @@ const weaponList = [
     {name:"野牛冲锋枪", category:"smg"},
     {name:"QCQ171冲锋枪", category:"smg"},
     {name:"SVCH精确射手步枪", category:"sniper"},
-    {name:"Mini-14", category:"sniper"},
+    {name:"Min-14", category:"sniper"},
     {name:"SVD射手步枪", category:"sniper"},
     {name:"SKS射手步枪", category:"sniper"},
     {name:"VSS射手步枪", category:"sniper"},
     {name:"SV-98狙击枪", category:"sniper"},
     {name:"R93狙击枪", category:"sniper"},
-    {name:"M14", category:"sniper"},
     {name:"M700狙击枪", category:"sniper"},
     {name:"PKM通用机枪", category:"lmg"},
     {name:"M249轻机枪", category:"lmg"},
@@ -744,6 +858,7 @@ const weaponList = [
     {name:".357左轮", category:"pistol"}
 ];
 const extraWeaponList = [
+    {name:"M14", category:"sniper"},
     {name:"SR-25射手步枪", category:"sniper"},
     {name:"巴雷特", category:"sniper"},
     {name:"AWM狙击枪", category:"sniper"},
@@ -936,24 +1051,17 @@ function shuffleArray(arr) {
     }
     return newArr;
 }
-function getItemLevel(name){
-    const match = name.match(/\((\d)级\)/);
-    return match ? parseInt(match[1]) : 3;
-}
+
+// =========重写加权随机函数，读取ALL_ITEM_WEIGHTS=========
 function weightedRandom(pool, category){
     const weights = pool.map((item) => {
-        let weight = 1;
-        if(category === 'helmet' || category === 'armor'){
-            const level = getItemLevel(item.text);
-            weight = DRAW_CONFIG.armorLevelWeight[level] || 1;
-        }
-        if(category === 'weapon'){
-            weight = DRAW_CONFIG.weaponCategoryWeight[item.category] || 1;
-        }
+        // 优先读取全局权重表，没有定义默认1
+        let w = ALL_ITEM_WEIGHTS[item.text] ?? 1;
+        // 如果上一轮抽过这个物品，施加重复惩罚
         if(lastResult[category] === item.text){
-            weight *= DRAW_CONFIG.repeatPenalty;
+            w *= DRAW_CONFIG.repeatPenalty;
         }
-        return weight;
+        return w;
     });
     const totalWeight = weights.reduce((sum, w) => sum + w, 0);
     let random = Math.random() * totalWeight;
@@ -965,6 +1073,7 @@ function weightedRandom(pool, category){
     }
     return pool.length - 1;
 }
+
 function buildQueue(){
     const queue = [];
     const weaponChecked = document.getElementById('chk-weapon').checked;
