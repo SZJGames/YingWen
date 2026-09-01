@@ -26,7 +26,6 @@ body{
     padding: 24px 15px;
     overflow-x:hidden;
 }
-
 /* ========== 波普斜向渐变放大标题：左→右字体越来越大 ========== */
 h1{
     margin-bottom: 24px;
@@ -61,7 +60,6 @@ h1 span:nth-child(11){ font-size:42px; color:#ff2255; }
 h1 span:nth-child(12){ font-size:44px; color:#2244ff; }
 h1 span:nth-child(13){ font-size:46px; color:#00bb44; }
 h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
-
 /* ========== 漫画波普通用按钮：粗黑描边，高饱和，卡通风格 ========== */
 .diff-btn{
     padding: 10px 18px;
@@ -95,7 +93,6 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     background: #aa33ff;
     color: #fff;
 }
-
 /* ========== 重置按钮 波普 ========== */
 .reset-btn{
     padding: 11px 22px;
@@ -119,7 +116,6 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     transform: translate(2px,2px);
     box-shadow:2px 2px 0 #000;
 }
-
 /* ========== 主抽取大按钮 波普漫画 ========== */
 #spinBtn{
     margin-top: 32px;
@@ -151,7 +147,6 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     transform:none;
     box-shadow:4px 4px 0 #000;
 }
-
 /* ========== 复制截图按钮波普 ========== */
 #copyImageBtn{
     margin-top:14px;
@@ -183,7 +178,6 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     min-height:20px;
     font-weight:bold;
 }
-
 /* ========== 配置面板波普漫画风：粗黑边框，明亮底色，漫画阴影 ========== */
 .config-panel{
     width: 680px;
@@ -248,7 +242,6 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     flex-wrap:wrap;
     justify-content:center;
 }
-
 /* ========== 开箱滚动区 波普漫画改造 ========== */
 .case-wrap{
     position: relative;
@@ -333,7 +326,6 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     border-bottom:18px solid #ff2266;
     filter: drop-shadow(0 2px 0 #000);
 }
-
 .result{
     margin-top:26px;
     font-size:26px;
@@ -372,7 +364,6 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     max-width:640px;
     font-weight:bold;
 }
-
 @media(max-width:650px){
     .case-container{height:110px;}
     .case-item{
@@ -724,8 +715,10 @@ let spinIndex = 0;
 let resultSet = {};
 let isSpinning = false;
 let dualGunExcludeCat = null;
+// 修改lastResult，双枪分开记录
 let lastResult = {
-    weapon: '',
+    weapon1: '',
+    weapon2: '',
     helmet: '',
     armor: '',
     operator: '',
@@ -836,12 +829,12 @@ function shuffleArray(arr) {
     return newArr;
 }
 // =========重写加权随机函数，读取ALL_ITEM_WEIGHTS=========
-function weightedRandom(pool, category){
+function weightedRandom(pool, lastItemKey){
     const weights = pool.map((item) => {
         // 优先读取全局权重表，没有定义默认1
         let w = ALL_ITEM_WEIGHTS[item.text] ?? 1;
         // 如果上一轮抽过这个物品，施加重复惩罚
-        if(lastResult[category] === item.text){
+        if(lastResult[lastItemKey] === item.text){
             w *= DRAW_CONFIG.repeatPenalty;
         }
         return w;
@@ -863,8 +856,8 @@ function buildQueue(){
     dualGunExcludeCat = null;
     if(weaponChecked){
         if(dualGun){
-            queue.push({key:'weapon', label:'武器①', isDualFirst:true});
-            queue.push({key:'weapon', label:'武器②', isDualSecond:true});
+            queue.push({key:'weapon1', label:'武器①', isDualFirst:true});
+            queue.push({key:'weapon2', label:'武器②', isDualSecond:true});
         }else{
             queue.push({key:'weapon', label:'武器'});
         }
@@ -879,7 +872,9 @@ function getCurrentPool(){
     const current = spinQueue[spinIndex];
     if(!current) return [];
     switch(current.key){
-        case 'weapon': {
+        case 'weapon':
+        case 'weapon1':
+        case 'weapon2': {
             let wList = [...weaponList];
             if(document.getElementById('chk-weapon-extra').checked){
                 wList = wList.concat(extraWeaponList);
@@ -990,7 +985,7 @@ function runSpin(){
         return;
     }
     const current = spinQueue[spinIndex];
-    const pool = shuffleArray(getCurrentPool());
+    let pool = getCurrentPool();
     if(pool.length === 0){
         if(current.isDualSecond){
             resText.innerText = "⚠️双枪模式：剩余可选武器分类为空，请多选几类武器！";
@@ -1005,6 +1000,8 @@ function runSpin(){
         }
         return;
     }
+    // 单次抽取只shuffle一次！pool数组，buildTrack和加权随机共用同一个数组！保证DOM顺序和数组顺序严格对应
+    pool = shuffleArray(pool);
     resText.innerText = `正在抽取${current.label}...`;
     isSpinning = true;
     spinBtn.disabled = true;
@@ -1012,25 +1009,52 @@ function runSpin(){
     caseTrack.style.transition = 'none';
     caseTrack.style.transform = 'translateX(0)';
     caseTrack.offsetHeight;
+
+    // 加权随机，使用当前pool数组
     const winIndex = weightedRandom(pool, current.key);
     const winItem = pool[winIndex];
+
+    // 修正item宽度计算，包含左右margin 6px+6px
     const itemEl = caseTrack.querySelector('.case-item');
-    const itemWidth = itemEl.offsetWidth + 10;
+    const itemWidthFull = itemEl.offsetWidth + 12; // width + margin-left + margin-right
     const containerWidth = caseTrack.parentElement.clientWidth;
-    const centerOffset = containerWidth / 2 - itemWidth / 2;
-    const globalWinIndex = (REPEAT_COUNT - 3) * pool.length + winIndex;
-    const targetX = -(globalWinIndex * itemWidth - centerOffset);
+    const centerOffset = containerWidth / 2 - itemWidthFull / 2;
+
+    // 选择靠后副本，防止滚动到最开头
+    const copyIndex = REPEAT_COUNT - 3;
+    const globalWinIndex = copyIndex * pool.length + winIndex;
+    const targetX = -(globalWinIndex * itemWidthFull - centerOffset);
+
     caseTrack.style.transition = `transform ${ANIM_DURATION}ms ${EASING}`;
     requestAnimationFrame(()=>{
         caseTrack.style.transform = `translateX(${targetX}px)`;
     });
+
     setTimeout(()=>{
-        const winText = winItem.text + (winItem.sub ? `（${winItem.sub}）` : '');
+        // 动画结束：读取瞄准位置的DOM，做校验兜底，防止视觉和逻辑不一致
+        const itemsDom = Array.from(caseTrack.querySelectorAll('.case-item'));
+        const finalWinDom = itemsDom[globalWinIndex];
+        let finalText = winItem.text;
+        let finalSub = winItem.sub;
+        if(finalWinDom){
+            const domText = finalWinDom.innerText.replace(/\n.*/,"").trim();
+            // 兜底校验，如果DOM展示文本和逻辑选中不一致，以DOM展示为准，修复错位
+            if(domText && domText !== winItem.text){
+                const findIdx = pool.findIndex(p=>p.text === domText);
+                if(findIdx >= 0){
+                    finalText = pool[findIdx].text;
+                    finalSub = pool[findIdx].sub;
+                }
+            }
+        }
+
+        const winText = finalText + (finalSub ? `（${finalSub}）` : '');
         resultSet[current.key + '_' + current.label] = winText;
         if(current.isDualFirst){
             dualGunExcludeCat = winItem.category;
         }
-        lastResult[current.key] = winItem.text;
+        lastResult[current.key] = finalText;
+
         spinIndex++;
         updateRecord();
         if(spinIndex < spinQueue.length){
