@@ -134,6 +134,36 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     transform: translate(2px,2px);
     box-shadow:2px 2px 0 #000;
 }
+/* 一键抽取按钮 */
+.auto-spin-btn{
+    padding: 11px 22px;
+    border:3px solid #000;
+    background:#00bb77;
+    color:#000;
+    border-radius:4px;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:14px;
+    box-shadow:4px 4px 0 #000;
+    transition: transform 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing:1px;
+}
+.auto-spin-btn:hover:not(:disabled){
+    transform: translate(-2px,-2px);
+    box-shadow:6px 6px 0 #000;
+}
+.auto-spin-btn:active:not(:disabled){
+    transform: translate(2px,2px);
+    box-shadow:2px 2px 0 #000;
+}
+.auto-spin-btn:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:4px 4px 0 #000;
+}
+
 /* ========== 主抽取大按钮 波普漫画 ========== */
 #spinBtn{
     margin-top: 32px;
@@ -464,6 +494,7 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 </div>
 <div class="control-box">
     <button class="reset-btn" id="resetBtn">重置重来</button>
+    <button class="auto-spin-btn" id="autoSpinBtn">一键抽取全部</button>
 </div>
 <!-- 开箱滚动区 -->
 <div class="case-wrap">
@@ -620,7 +651,6 @@ const DRAW_CONFIG = {
     bounceDuration: 450, //窜动动画时长
     bigJumpChance:0.1, //小概率大段向前窜动（会跳过物品）
     bigJumpRange:[150,300], //大跳像素范围
-
     //=====回弹配置（只有不触发任何向前窜动才会走回弹）=====
     springChance:0.2, //总回弹触发概率
     springBigChance:0.1, //回弹里面触发【大回弹】的概率
@@ -652,7 +682,7 @@ const weaponList = [
     {name:"野牛冲锋枪", category:"smg"},
     {name:"QCQ171冲锋枪", category:"smg"},
     {name:"SVCH精确射手步枪", category:"sniper"},
-    {name:"Min-14", category:"sniper"},
+    {name:"Mini-14", category:"sniper"},
     {name:"SVD射手步枪", category:"sniper"},
     {name:"SKS射手步枪", category:"sniper"},
     {name:"VSS射手步枪", category:"sniper"},
@@ -752,10 +782,12 @@ let spinQueue = [];
 let spinIndex = 0;
 let resultSet = {};
 let isSpinning = false;
+let isAutoMode = false; // 新增：一键自动抽取标记
 let dualGunExcludeCat = null;
 let lastResult = {
     weapon1: '',
     weapon2: '',
+    weapon: '',
     helmet: '',
     armor: '',
     operator: '',
@@ -764,6 +796,7 @@ let lastResult = {
 const caseTrack = document.getElementById('caseTrack');
 const spinBtn = document.getElementById('spinBtn');
 const resetBtn = document.getElementById('resetBtn');
+const autoSpinBtn = document.getElementById('autoSpinBtn');
 const resText = document.getElementById('resText');
 const recordText = document.getElementById('recordText');
 const weapAllToggleBtn = document.getElementById('weapAllToggle');
@@ -804,7 +837,6 @@ function syncFateBtnState(){
         weapAllToggleBtn.classList.remove('active');
     }
 }
-
 document.querySelectorAll('.weapon-cat-btn').forEach(btn=>{
     btn.onclick = function(){
         const cat = this.dataset.weapcat;
@@ -854,7 +886,6 @@ document.querySelectorAll('[data-mapdiff]').forEach(btn=>{
         if(!isSpinning) resetAll();
     };
 });
-
 function shuffleArray(arr) {
     const newArr = [...arr];
     for (let i = newArr.length - 1; i > 0; i--) {
@@ -863,7 +894,6 @@ function shuffleArray(arr) {
     }
     return newArr;
 }
-
 function weightedRandom(pool, lastItemKey){
     const weights = pool.map((item) => {
         let w = ALL_ITEM_WEIGHTS[item.text] ?? 1;
@@ -882,7 +912,6 @@ function weightedRandom(pool, lastItemKey){
     }
     return pool.length - 1;
 }
-
 function buildQueue(){
     const queue = [];
     const weaponChecked = document.getElementById('chk-weapon').checked;
@@ -902,7 +931,6 @@ function buildQueue(){
     if(document.getElementById('chk-map').checked) queue.push({key:'map', label:'地图'});
     return queue;
 }
-
 function getCurrentPool(){
     const current = spinQueue[spinIndex];
     if(!current) return [];
@@ -949,7 +977,6 @@ function getCurrentPool(){
     }
     return [];
 }
-
 function buildTrack(pool){
     caseTrack.innerHTML = '';
     for(let r = 0; r < REPEAT_COUNT; r++){
@@ -961,7 +988,6 @@ function buildTrack(pool){
         });
     }
 }
-
 function updateRecord(){
     const lines = [];
     spinQueue.forEach(q=>{
@@ -975,23 +1001,26 @@ function updateRecord(){
         copyTip.innerText = "";
     }
 }
-
 function resetAll(){
     spinQueue = buildQueue();
     spinIndex = 0;
     resultSet = {};
+    isAutoMode = false;
     resText.innerText = "";
     copyTip.innerText = "";
     const dualGun = document.getElementById('chk-dualGun').checked;
     if(dualGun && selectedWeaponCats.length < 2){
         spinBtn.innerText = "⚠️双枪模式需要至少勾选2个武器分类";
         spinBtn.disabled = true;
+        autoSpinBtn.disabled = true;
     }else if(spinQueue.length === 0){
         spinBtn.innerText = "请至少勾选一项";
         spinBtn.disabled = true;
+        autoSpinBtn.disabled = true;
     }else{
         spinBtn.innerText = `开始抽取（共${spinQueue.length}项）`;
         spinBtn.disabled = false;
+        autoSpinBtn.disabled = false;
     }
     const pool = shuffleArray(getCurrentPool());
     if(pool.length > 0) buildTrack(pool);
@@ -1014,11 +1043,9 @@ document.querySelectorAll('.map-check').forEach(cb=>{
         if(!isSpinning) resetAll();
     });
 });
-
 function randomRange(min,max){
     return Math.random()*(max-min)+min;
 }
-
 // 解析DOM位移，结算结果公共函数
 function settleResult(current, itemWidthFull, containerWidth){
     const itemsDom = Array.from(caseTrack.querySelectorAll('.case-item'));
@@ -1045,17 +1072,27 @@ function settleResult(current, itemWidthFull, containerWidth){
     lastResult[current.key] = finalText;
     spinIndex++;
     updateRecord();
+
     if(spinIndex < spinQueue.length){
         const next = spinQueue[spinIndex];
-        resText.innerText = `✅${current.label}抽到：${winText}，点击继续抽取${next.label}`;
+        resText.innerText = `✅${current.label}抽到：${winText}`;
         spinBtn.innerText = `抽取${next.label}`;
+        isSpinning = false;
+        spinBtn.disabled = false;
+        autoSpinBtn.disabled = false;
+
+        // 自动模式：间隔一小段时间自动继续下一轮
+        if(isAutoMode){
+            autoSpinBtn.disabled = true;
+            spinBtn.disabled = true;
+            setTimeout(()=>{
+                runSpin();
+            },600);
+        }
     }else{
         finishAll(winText, current.label);
     }
-    isSpinning = false;
-    spinBtn.disabled = false;
 }
-
 function runSpin(){
     if(isSpinning) return;
     if(spinQueue.length === 0) return;
@@ -1083,13 +1120,12 @@ function runSpin(){
     resText.innerText = `正在抽取${current.label}...`;
     isSpinning = true;
     spinBtn.disabled = true;
+    autoSpinBtn.disabled = true;
     buildTrack(pool);
     caseTrack.style.transition = 'none';
     caseTrack.style.transform = 'translateX(0)';
     caseTrack.offsetHeight;
-
     weightedRandom(pool, current.key);
-
     const itemEl = caseTrack.querySelector('.case-item');
     const itemWidthFull = itemEl.offsetWidth + 12;
     const containerWidth = caseTrack.parentElement.clientWidth;
@@ -1099,17 +1135,14 @@ function runSpin(){
     const winIndex = weightedRandom(pool, current.key);
     const globalWinIndex = copyIndex * pool.length + winIndex;
     let targetX = -(globalWinIndex * itemWidthFull - centerOffset) + randomStopOffset;
-
     caseTrack.style.transition = `transform ${ANIM_DURATION}ms ${EASING}`;
     requestAnimationFrame(()=>{
         caseTrack.style.transform = `translateX(${targetX}px)`;
     });
-
     setTimeout(()=>{
         let currentX = targetX;
         const doBigJump = Math.random() < DRAW_CONFIG.bigJumpChance;
         const doBounce = !doBigJump && Math.random() < DRAW_CONFIG.bounceChance;
-
         // 分支1：向前窜动（普通窜动 / 大窜动），**不回弹**
         if(doBigJump || doBounce){
             const px = doBigJump
@@ -1123,7 +1156,6 @@ function runSpin(){
             }, DRAW_CONFIG.bounceDuration);
             return;
         }
-
         // 分支2：不向前窜动，判断是否回弹（小回弹 / 大回弹 / 不回弹）
         const doSpring = Math.random() < DRAW_CONFIG.springChance;
         if(doSpring){
@@ -1143,16 +1175,31 @@ function runSpin(){
         }
     }, ANIM_DURATION);
 }
-
 function finishAll(lastItem='', lastLabel=''){
+    isSpinning = false;
+    isAutoMode = false;
     if(lastItem){
         resText.innerText = `🎉全部抽取完成！${lastLabel}：${lastItem}，点击重新抽取`;
     }else{
         resText.innerText = `🎉全部抽取完成！点击重新抽取`;
     }
     spinBtn.innerText = "重新抽取";
+    spinBtn.disabled = false;
+    autoSpinBtn.disabled = false;
 }
+// 普通单步抽取
 spinBtn.addEventListener('click', runSpin);
+
+// 一键全部自动抽取
+autoSpinBtn.addEventListener('click',function(){
+    if(isSpinning) return;
+    if(spinIndex >= spinQueue.length){
+        resetAll();
+    }
+    isAutoMode = true;
+    runSpin();
+});
+
 resetAll();
 </script>
 </body>
