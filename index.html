@@ -14,10 +14,15 @@
     font-family: "Microsoft Yahei", sans-serif;
 }
 body{
-    /* 波普底色+简单网点背景模拟漫画印刷 */
-    background-color: #9C9CA4;
-    background-image: radial-gradient(#ff3366 2px, transparent 2px);
-    background-size: 16px 16px;
+    /* ======================
+    后台修改这里设置背景：
+    background-image: url("");
+    background‑size: cover;
+    background‑position: center;
+    背景透明度修改下面伪元素 opacity，0~1之间
+    不需要背景就把 background-image 注释掉
+    ====================== */
+    background-color: #ffffff;
     color: #111;
     min-height: 100vh;
     display: flex;
@@ -25,6 +30,19 @@ body{
     align-items: center;
     padding: 24px 15px;
     overflow-x:hidden;
+    position: relative;
+}
+/* 背景遮罩层，用来实现背景图片透明度，不要删除 */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    background-image: url("./1.jpg"); /*在这里填入图片地址*/
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.9; /* 修改这个数值调整背景透明度 0完全透明 1不透明 */
 }
 /* ========== 波普斜向渐变放大标题：左→右字体越来越大 ========== */
 h1{
@@ -174,9 +192,10 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 #copyTip{
     margin-top:8px;
     font-size:14px;
-    color:#222;
+    color:#fff;
     min-height:20px;
     font-weight:bold;
+    text-shadow:1px 1px 2px #000;
 }
 /* ========== 配置面板波普漫画风：粗黑边框，明亮底色，漫画阴影 ========== */
 .config-panel{
@@ -329,10 +348,11 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 .result{
     margin-top:26px;
     font-size:26px;
-    color:#cc0044;
+    color:#ff4477;
     font-weight:900;
     min-height:34px;
     text-align:center;
+    text-shadow:2px 2px 0 #000;
 }
 .record{
     margin-top:22px;
@@ -358,11 +378,12 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 }
 .tips{
     margin-top:16px;
-    color:#333;
+    color:#ffffff;
     font-size:14px;
     text-align:center;
     max-width:640px;
     font-weight:bold;
+    text-shadow:1px 1px 2px #000;
 }
 @media(max-width:650px){
     .case-container{height:110px;}
@@ -1009,27 +1030,22 @@ function runSpin(){
     caseTrack.style.transition = 'none';
     caseTrack.style.transform = 'translateX(0)';
     caseTrack.offsetHeight;
-
     // 加权随机，使用当前pool数组
     const winIndex = weightedRandom(pool, current.key);
     const winItem = pool[winIndex];
-
     // 修正item宽度计算，包含左右margin 6px+6px
     const itemEl = caseTrack.querySelector('.case-item');
     const itemWidthFull = itemEl.offsetWidth + 12; // width + margin-left + margin-right
     const containerWidth = caseTrack.parentElement.clientWidth;
     const centerOffset = containerWidth / 2 - itemWidthFull / 2;
-
     // 选择靠后副本，防止滚动到最开头
     const copyIndex = REPEAT_COUNT - 3;
     const globalWinIndex = copyIndex * pool.length + winIndex;
     const targetX = -(globalWinIndex * itemWidthFull - centerOffset);
-
     caseTrack.style.transition = `transform ${ANIM_DURATION}ms ${EASING}`;
     requestAnimationFrame(()=>{
         caseTrack.style.transform = `translateX(${targetX}px)`;
     });
-
     setTimeout(()=>{
         // 动画结束：读取瞄准位置的DOM，做校验兜底，防止视觉和逻辑不一致
         const itemsDom = Array.from(caseTrack.querySelectorAll('.case-item'));
@@ -1038,7 +1054,7 @@ function runSpin(){
         let finalSub = winItem.sub;
         if(finalWinDom){
             const domText = finalWinDom.innerText.replace(/\n.*/,"").trim();
-            // 兜底校验，如果DOM展示文本和逻辑选中不一致，以DOM展示为准，修复错位
+            // 兜底校验，如果DOM展示文本和逻辑选中不一致，以DOM展示为准
             if(domText && domText !== winItem.text){
                 const findIdx = pool.findIndex(p=>p.text === domText);
                 if(findIdx >= 0){
@@ -1047,14 +1063,12 @@ function runSpin(){
                 }
             }
         }
-
         const winText = finalText + (finalSub ? `（${finalSub}）` : '');
         resultSet[current.key + '_' + current.label] = winText;
         if(current.isDualFirst){
             dualGunExcludeCat = winItem.category;
         }
         lastResult[current.key] = finalText;
-
         spinIndex++;
         updateRecord();
         if(spinIndex < spinQueue.length){
