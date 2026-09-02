@@ -16,7 +16,7 @@
 body{
     /* ======================
     后台修改这里设置背景：
-    background-image: url("");
+    background-image: url("./1.jpg");
     background‑size: cover;
     background‑position: center;
     背景透明度修改下面伪元素 opacity，0~1之间
@@ -42,7 +42,7 @@ body::before{
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 1; /* 修改这个数值调整背景透明度 0完全透明 1不透明 */
+    opacity:1; /* 修改这个数值调整背景透明度 0完全透明 1不透明 */
 }
 /* ========== 波普斜向渐变放大标题：左→右字体越来越大 ========== */
 h1{
@@ -75,6 +75,9 @@ h1 span:nth-child(8){ font-size:36px; color:#00bb44; }
 h1 span:nth-child(9){ font-size:38px; color:#ff4400; }
 h1 span:nth-child(10){ font-size:40px; color:#aa22ff; }
 h1 span:nth-child(11){ font-size:42px; color:#ff2255; }
+h1 span:nth-child(12){ font-size:44px; color:#2244ff; }
+h1 span:nth-child(13){ font-size:46px; color:#00bb44; }
+h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 /* ========== 漫画波普通用按钮：粗黑描边，高饱和，卡通风格 ========== */
 .diff-btn{
     padding: 10px 18px;
@@ -403,7 +406,7 @@ h1 span:nth-child(11){ font-size:42px; color:#ff2255; }
 </head>
 <body>
 <h1>
-<span>三</span><span>角</span><span>洲</span><span>行</span><span>动</span><span>娱</span><span>乐</span>
+<span>三</span><span>角</span><span>洲</span><span>行</span><span>动</span><span>全</span><span>能</span><span>抽</span><span>取</span><span>器</span>
 </h1>
 <!-- 配置面板 -->
 <div class="config-panel">
@@ -485,6 +488,7 @@ h1 span:nth-child(11){ font-size:42px; color:#ff2255; }
 权重说明：
 数字越大抽到概率越高；基准=1；设置0=不会抽出来
 例："M4A1突击步枪": 5  代表M4概率是普通物品(1)的5倍
+★重要：权重对【初级/中级/高级/命运】全部模式生效，不只是命运模式
 */
 const ALL_ITEM_WEIGHTS = {
     // --------武器权重--------
@@ -605,9 +609,22 @@ const ALL_ITEM_WEIGHTS = {
     "航天基地-绝密":0.8,
     "潮汐监狱-绝密":0.8
 };
-// 旧全局配置（保留重复惩罚，物品等级倍率现在失效，全部交给上面ALL_ITEM_WEIGHTS）
+// 全局动画配置
 const DRAW_CONFIG = {
-    repeatPenalty: 0.3 //上一次抽到的物品本次权重乘0.3，防止连续重复
+    repeatPenalty: 0.3, //上一次抽到的物品本次权重乘0.3，防止连续重复
+    stopOffsetRange: [-45,45], // 停止随机偏移像素，正负，不要每次都正中
+    bounceChance: 0.3, //普通向前窜动概率
+    bounceDistanceRange: [50,100], //普通前窜距离px
+    bounceDuration: 450, //窜动动画时长
+    bigJumpChance:0.1, //小概率大段向前窜动（会跳过物品）
+    bigJumpRange:[150,300], //大跳像素范围
+
+    //=====回弹配置（只有不触发任何向前窜动才会走回弹）=====
+    springChance:0.32, //总回弹触发概率
+    springBigChance:0.12, //回弹里面触发【大回弹】的概率
+    springSmallRange:[30,75], //小回弹距离
+    springBigRange:[60,120], //大回弹一大段距离
+    springDuration:420
 };
 // ==============================================================
 const weaponList = [
@@ -675,7 +692,7 @@ const helmetPool = {
         "Mask-1铁壁头盔(5级)","H09 防暴头盔(5级)","GN 重型头盔(5级)","GN久战重型夜视头盔(5级)","DICH-1战术头盔(5级)","GN 重型夜视头盔(5级)"
     ],
     fate: [],
-    egg:["不要头【我很猛】"] //0级彩蛋头盔池
+    egg:["不要头【我很猛】"]
 };
 const armorPool = {
     easy: [
@@ -693,7 +710,7 @@ const armorPool = {
         "Hvk-2防弹衣(5级)","精英防弹背心(5级)","FS复合防弹衣(5级)","重型突击背心(5级)"
     ],
     fate: [],
-    egg:["不要甲【我很猛】"] //0级彩蛋护甲池
+    egg:["不要甲【我很猛】"]
 };
 (function buildFatePool(){
     const allHelmets = new Set([...helmetPool.easy, ...helmetPool.mid, ...helmetPool.hard,...helmetPool.egg]);
@@ -733,7 +750,6 @@ let spinIndex = 0;
 let resultSet = {};
 let isSpinning = false;
 let dualGunExcludeCat = null;
-// 修改lastResult，双枪分开记录
 let lastResult = {
     weapon1: '',
     weapon2: '',
@@ -754,7 +770,7 @@ const recordWrap = document.getElementById('recordWrap');
 const REPEAT_COUNT = 10;
 const ANIM_DURATION = 4000;
 const EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
-// ========= 截图复制图片到剪贴板功能 =========
+
 async function copyResultImage(){
     copyTip.innerText = "正在生成图片...";
     try{
@@ -762,7 +778,6 @@ async function copyResultImage(){
             backgroundColor:"#ffffff",
             scale:2
         });
-        // 转blob
         const blob = await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
         const item = new ClipboardItem({ "image/png": blob });
         await navigator.clipboard.write([item]);
@@ -770,7 +785,6 @@ async function copyResultImage(){
     }catch(err){
         console.error(err);
         copyTip.innerText = "❌复制失败，正在下载图片";
-        // 降级下载
         const a = document.createElement("a");
         a.download = "三角洲抽取结果_波普版.png";
         a.href = canvas.toDataURL("image/png");
@@ -778,7 +792,7 @@ async function copyResultImage(){
     }
 }
 copyImageBtn.onclick = copyResultImage;
-// =========【新增】同步命运按钮高亮状态 =========
+
 function syncFateBtnState(){
     const isAllSel = ALL_WEAPON_CATS.every(cat=> selectedWeaponCats.includes(cat));
     if(isAllSel){
@@ -787,7 +801,7 @@ function syncFateBtnState(){
         weapAllToggleBtn.classList.remove('active');
     }
 }
-// ===================== 配置交互 =====================
+
 document.querySelectorAll('.weapon-cat-btn').forEach(btn=>{
     btn.onclick = function(){
         const cat = this.dataset.weapcat;
@@ -837,7 +851,7 @@ document.querySelectorAll('[data-mapdiff]').forEach(btn=>{
         if(!isSpinning) resetAll();
     };
 });
-// ===================== 工具函数 =====================
+
 function shuffleArray(arr) {
     const newArr = [...arr];
     for (let i = newArr.length - 1; i > 0; i--) {
@@ -846,12 +860,10 @@ function shuffleArray(arr) {
     }
     return newArr;
 }
-// =========重写加权随机函数，读取ALL_ITEM_WEIGHTS=========
+
 function weightedRandom(pool, lastItemKey){
     const weights = pool.map((item) => {
-        // 优先读取全局权重表，没有定义默认1
         let w = ALL_ITEM_WEIGHTS[item.text] ?? 1;
-        // 如果上一轮抽过这个物品，施加重复惩罚
         if(lastResult[lastItemKey] === item.text){
             w *= DRAW_CONFIG.repeatPenalty;
         }
@@ -867,6 +879,7 @@ function weightedRandom(pool, lastItemKey){
     }
     return pool.length - 1;
 }
+
 function buildQueue(){
     const queue = [];
     const weaponChecked = document.getElementById('chk-weapon').checked;
@@ -886,6 +899,7 @@ function buildQueue(){
     if(document.getElementById('chk-map').checked) queue.push({key:'map', label:'地图'});
     return queue;
 }
+
 function getCurrentPool(){
     const current = spinQueue[spinIndex];
     if(!current) return [];
@@ -932,6 +946,7 @@ function getCurrentPool(){
     }
     return [];
 }
+
 function buildTrack(pool){
     caseTrack.innerHTML = '';
     for(let r = 0; r < REPEAT_COUNT; r++){
@@ -943,6 +958,7 @@ function buildTrack(pool){
         });
     }
 }
+
 function updateRecord(){
     const lines = [];
     spinQueue.forEach(q=>{
@@ -950,13 +966,13 @@ function updateRecord(){
         lines.push(`${q.label}：${val}`);
     });
     recordText.innerHTML = lines.join('<br>');
-    // 判断是否有真正结果，启用截图按钮
     const hasResult = Object.values(resultSet).some(v=>v && v!=='待抽取');
     copyImageBtn.disabled = !hasResult;
     if(!hasResult){
         copyTip.innerText = "";
     }
 }
+
 function resetAll(){
     spinQueue = buildQueue();
     spinIndex = 0;
@@ -995,6 +1011,48 @@ document.querySelectorAll('.map-check').forEach(cb=>{
         if(!isSpinning) resetAll();
     });
 });
+
+function randomRange(min,max){
+    return Math.random()*(max-min)+min;
+}
+
+// 解析DOM位移，结算结果公共函数
+function settleResult(current, itemWidthFull, containerWidth){
+    const itemsDom = Array.from(caseTrack.querySelectorAll('.case-item'));
+    const realTranslateX = new WebKitCSSMatrix(getComputedStyle(caseTrack).transform).m41;
+    const viewCenterPos = containerWidth / 2;
+    const trackLocalX = viewCenterPos - realTranslateX;
+    const domIndex = Math.floor(trackLocalX / itemWidthFull);
+    const finalWinDom = itemsDom[domIndex] || itemsDom[Math.max(0,Math.min(domIndex,itemsDom.length-1))];
+    let finalText = "";
+    let finalSub = "";
+    if(finalWinDom){
+        const domText = finalWinDom.innerText.replace(/\n.*/,"").trim();
+        finalText = domText;
+        const subDom = finalWinDom.querySelector('.sub');
+        finalSub = subDom ? subDom.innerText : "";
+    }
+    const winText = finalText + (finalSub ? `（${finalSub}）` : '');
+    resultSet[current.key + '_' + current.label] = winText;
+    if(current.isDualFirst){
+        const pool = getCurrentPool();
+        const foundPoolItem = pool.find(p=>p.text === finalText);
+        if(foundPoolItem) dualGunExcludeCat = foundPoolItem.category;
+    }
+    lastResult[current.key] = finalText;
+    spinIndex++;
+    updateRecord();
+    if(spinIndex < spinQueue.length){
+        const next = spinQueue[spinIndex];
+        resText.innerText = `✅${current.label}抽到：${winText}，点击继续抽取${next.label}`;
+        spinBtn.innerText = `抽取${next.label}`;
+    }else{
+        finishAll(winText, current.label);
+    }
+    isSpinning = false;
+    spinBtn.disabled = false;
+}
+
 function runSpin(){
     if(isSpinning) return;
     if(spinQueue.length === 0) return;
@@ -1018,7 +1076,6 @@ function runSpin(){
         }
         return;
     }
-    // 单次抽取只shuffle一次！pool数组，buildTrack和加权随机共用同一个数组！保证DOM顺序和数组顺序严格对应
     pool = shuffleArray(pool);
     resText.innerText = `正在抽取${current.label}...`;
     isSpinning = true;
@@ -1027,58 +1084,63 @@ function runSpin(){
     caseTrack.style.transition = 'none';
     caseTrack.style.transform = 'translateX(0)';
     caseTrack.offsetHeight;
-    // 加权随机，使用当前pool数组
-    const winIndex = weightedRandom(pool, current.key);
-    const winItem = pool[winIndex];
-    // 修正item宽度计算，包含左右margin 6px+6px
+
+    weightedRandom(pool, current.key);
+
     const itemEl = caseTrack.querySelector('.case-item');
-    const itemWidthFull = itemEl.offsetWidth + 12; // width + margin-left + margin-right
+    const itemWidthFull = itemEl.offsetWidth + 12;
     const containerWidth = caseTrack.parentElement.clientWidth;
     const centerOffset = containerWidth / 2 - itemWidthFull / 2;
-    // 选择靠后副本，防止滚动到最开头
+    const randomStopOffset = randomRange(DRAW_CONFIG.stopOffsetRange[0], DRAW_CONFIG.stopOffsetRange[1]);
     const copyIndex = REPEAT_COUNT - 3;
+    const winIndex = weightedRandom(pool, current.key);
     const globalWinIndex = copyIndex * pool.length + winIndex;
-    const targetX = -(globalWinIndex * itemWidthFull - centerOffset);
+    let targetX = -(globalWinIndex * itemWidthFull - centerOffset) + randomStopOffset;
+
     caseTrack.style.transition = `transform ${ANIM_DURATION}ms ${EASING}`;
     requestAnimationFrame(()=>{
         caseTrack.style.transform = `translateX(${targetX}px)`;
     });
+
     setTimeout(()=>{
-        // 动画结束：读取瞄准位置的DOM，做校验兜底，防止视觉和逻辑不一致
-        const itemsDom = Array.from(caseTrack.querySelectorAll('.case-item'));
-        const finalWinDom = itemsDom[globalWinIndex];
-        let finalText = winItem.text;
-        let finalSub = winItem.sub;
-        if(finalWinDom){
-            const domText = finalWinDom.innerText.replace(/\n.*/,"").trim();
-            // 兜底校验，如果DOM展示文本和逻辑选中不一致，以DOM展示为准
-            if(domText && domText !== winItem.text){
-                const findIdx = pool.findIndex(p=>p.text === domText);
-                if(findIdx >= 0){
-                    finalText = pool[findIdx].text;
-                    finalSub = pool[findIdx].sub;
-                }
-            }
+        let currentX = targetX;
+        const doBigJump = Math.random() < DRAW_CONFIG.bigJumpChance;
+        const doBounce = !doBigJump && Math.random() < DRAW_CONFIG.bounceChance;
+
+        // 分支1：向前窜动（普通窜动 / 大窜动），**不回弹**
+        if(doBigJump || doBounce){
+            const px = doBigJump
+                ? randomRange(DRAW_CONFIG.bigJumpRange[0], DRAW_CONFIG.bigJumpRange[1])
+                : randomRange(DRAW_CONFIG.bounceDistanceRange[0], DRAW_CONFIG.bounceDistanceRange[1]);
+            currentX -= px;
+            caseTrack.style.transition = `transform ${DRAW_CONFIG.bounceDuration}ms ease-out`;
+            caseTrack.style.transform = `translateX(${currentX}px)`;
+            setTimeout(()=>{
+                settleResult(current, itemWidthFull, containerWidth);
+            }, DRAW_CONFIG.bounceDuration);
+            return;
         }
-        const winText = finalText + (finalSub ? `（${finalSub}）` : '');
-        resultSet[current.key + '_' + current.label] = winText;
-        if(current.isDualFirst){
-            dualGunExcludeCat = winItem.category;
-        }
-        lastResult[current.key] = finalText;
-        spinIndex++;
-        updateRecord();
-        if(spinIndex < spinQueue.length){
-            const next = spinQueue[spinIndex];
-            resText.innerText = `✅${current.label}抽到：${winText}，点击继续抽取${next.label}`;
-            spinBtn.innerText = `抽取${next.label}`;
+
+        // 分支2：不向前窜动，判断是否回弹（小回弹 / 大回弹 / 不回弹）
+        const doSpring = Math.random() < DRAW_CONFIG.springChance;
+        if(doSpring){
+            const isSpringBig = Math.random() < DRAW_CONFIG.springBigChance;
+            const springPx = isSpringBig
+                ? randomRange(DRAW_CONFIG.springBigRange[0], DRAW_CONFIG.springBigRange[1])
+                : randomRange(DRAW_CONFIG.springSmallRange[0], DRAW_CONFIG.springSmallRange[1]);
+            currentX += springPx;
+            caseTrack.style.transition = `transform ${DRAW_CONFIG.springDuration}ms ease-out`;
+            caseTrack.style.transform = `translateX(${currentX}px)`;
+            setTimeout(()=>{
+                settleResult(current, itemWidthFull, containerWidth);
+            }, DRAW_CONFIG.springDuration);
         }else{
-            finishAll(winText, current.label);
+            // 完全不做额外动画，直接结算
+            settleResult(current, itemWidthFull, containerWidth);
         }
-        isSpinning = false;
-        spinBtn.disabled = false;
     }, ANIM_DURATION);
 }
+
 function finishAll(lastItem='', lastLabel=''){
     if(lastItem){
         resText.innerText = `🎉全部抽取完成！${lastLabel}：${lastItem}，点击重新抽取`;
