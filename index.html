@@ -138,7 +138,7 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 .auto-spin-btn{
     padding: 11px 22px;
     border:3px solid #000;
-    background:#00bb77;
+    background:#6ca984;
     color:#000;
     border-radius:4px;
     cursor:pointer;
@@ -163,10 +163,8 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     transform:none;
     box-shadow:4px 4px 0 #000;
 }
-
 /* ========== 主抽取大按钮 波普漫画 ========== */
 #spinBtn{
-    margin-top: 32px;
     padding: 18px 70px;
     font-size: 22px;
     font-weight: 900;
@@ -231,10 +229,10 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 .config-panel{
     width: 680px;
     max-width: 100%;
-    background: #fff;
+    background: rgba(255,255,255,0.65);
     border:4px solid #000;
     box-shadow: 8px 8px 0 #000;
-    border-radius: 6px;
+    border-radius:14px;
     padding: 20px;
     margin-bottom: 24px;
 }
@@ -287,23 +285,25 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 .control-box{
     display:flex;
     gap:14px;
-    margin-bottom:24px;
+    margin:20px 0;
     flex-wrap:wrap;
     justify-content:center;
+    align-items:center; /* 大小按钮垂直居中对齐 */
 }
 /* ========== 开箱滚动区 波普漫画改造 ========== */
 .case-wrap{
     position: relative;
-    width: 640px;
+    width: 720px; /* 🔹加宽，原640px */
     max-width: 100%;
+    margin:30px 0;
 }
 .case-container{
     width:100%;
-    height:130px;
-    background:#ffffff;
+    height:150px; /* 🔹加高，原130px */
+    background-color:rgba(255,255,255,0.60); /*🔹背景半透明白，0‑1，数值越小越透明；文字不受影响 */
     border:4px solid #000;
-    border-radius:6px;
-    overflow:hidden;
+    border-radius:14px; /*🔹大圆角 */
+    overflow:hidden; /*🔹必须！防止内部内容溢出圆角 */
     position:relative;
     box-shadow: 6px 6px 0 #000;
 }
@@ -320,7 +320,7 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     margin:0 6px;
     background:#00bbff;
     border:3px solid #000;
-    border-radius:4px;
+    border-radius:10px; /*🔹每个物品格子圆角 */
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -376,7 +376,7 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     filter: drop-shadow(0 2px 0 #000);
 }
 .result{
-    margin-top:26px;
+    margin-top:10px;
     font-size:26px;
     color:#ff4477;
     font-weight:900;
@@ -388,10 +388,10 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     margin-top:22px;
     padding:28px 24px;
     border:4px solid #000;
-    border-radius:6px;
+    border-radius:14px;  /* 加大圆角 */
     width:640px;
     max-width:100%;
-    background:#fff;
+    background:rgba(255,255,255,0.65);  /* 改成半透明 */
     box-shadow:8px 8px 0 #000;
 }
 .record h3{
@@ -492,10 +492,7 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
         </div>
     </div>
 </div>
-<div class="control-box">
-    <button class="reset-btn" id="resetBtn">重置重来</button>
-    <button class="auto-spin-btn" id="autoSpinBtn">一键抽取全部</button>
-</div>
+
 <!-- 开箱滚动区 -->
 <div class="case-wrap">
     <div class="case-container">
@@ -503,7 +500,14 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     </div>
     <div class="case-indicator"></div>
 </div>
-<button id="spinBtn">开始抽取</button>
+
+<!-- ✅三个按钮放在开箱滚动区的下面！顺序：重置｜大抽取｜一键抽取 -->
+<div class="control-box">
+    <button class="reset-btn" id="resetBtn">重置重来</button>
+    <button id="spinBtn">开始抽取</button>
+    <button class="auto-spin-btn" id="autoSpinBtn">自动抽取全部</button>
+</div>
+
 <div class="result" id="resText"></div>
 <div class="record" id="recordWrap">
     <h3>📋 本局抽取结果</h3>
@@ -806,7 +810,6 @@ const recordWrap = document.getElementById('recordWrap');
 const REPEAT_COUNT = 10;
 const ANIM_DURATION = 4000;
 const EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
-
 async function copyResultImage(){
     copyTip.innerText = "正在生成图片...";
     try{
@@ -828,7 +831,6 @@ async function copyResultImage(){
     }
 }
 copyImageBtn.onclick = copyResultImage;
-
 function syncFateBtnState(){
     const isAllSel = ALL_WEAPON_CATS.every(cat=> selectedWeaponCats.includes(cat));
     if(isAllSel){
@@ -1072,7 +1074,6 @@ function settleResult(current, itemWidthFull, containerWidth){
     lastResult[current.key] = finalText;
     spinIndex++;
     updateRecord();
-
     if(spinIndex < spinQueue.length){
         const next = spinQueue[spinIndex];
         resText.innerText = `✅${current.label}抽到：${winText}`;
@@ -1080,7 +1081,6 @@ function settleResult(current, itemWidthFull, containerWidth){
         isSpinning = false;
         spinBtn.disabled = false;
         autoSpinBtn.disabled = false;
-
         // 自动模式：间隔一小段时间自动继续下一轮
         if(isAutoMode){
             autoSpinBtn.disabled = true;
@@ -1189,7 +1189,6 @@ function finishAll(lastItem='', lastLabel=''){
 }
 // 普通单步抽取
 spinBtn.addEventListener('click', runSpin);
-
 // 一键全部自动抽取
 autoSpinBtn.addEventListener('click',function(){
     if(isSpinning) return;
@@ -1199,7 +1198,6 @@ autoSpinBtn.addEventListener('click',function(){
     isAutoMode = true;
     runSpin();
 });
-
 resetAll();
 </script>
 </body>
