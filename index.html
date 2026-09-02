@@ -22,7 +22,6 @@ body{
     背景透明度修改下面伪元素 opacity，0~1之间
     不需要背景就把 background-image 注释掉
     ====================== */
-    background-image: url("./1.jpg");
     background-color: #ffffff;
     color: #111;
     min-height: 100vh;
@@ -39,11 +38,11 @@ body::before{
     position:fixed;
     inset:0;
     z-index:-1;
-    /*background-image: url("./1.jpg"); 在这里填入图片地址*/
+    background-image: url("./1.jpg"); /*在这里填入图片地址*/
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.9; /* 修改这个数值调整背景透明度 0完全透明 1不透明 */
+    opacity: 1; /* 修改这个数值调整背景透明度 0完全透明 1不透明 */
 }
 /* ========== 波普斜向渐变放大标题：左→右字体越来越大 ========== */
 h1{
