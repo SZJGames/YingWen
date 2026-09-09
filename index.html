@@ -492,7 +492,6 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
         </div>
     </div>
 </div>
-
 <!-- 开箱滚动区 -->
 <div class="case-wrap">
     <div class="case-container">
@@ -500,14 +499,12 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
     </div>
     <div class="case-indicator"></div>
 </div>
-
 <!-- ✅三个按钮放在开箱滚动区的下面！顺序：重置｜大抽取｜一键抽取 -->
 <div class="control-box">
     <button class="reset-btn" id="resetBtn">重置重来</button>
     <button id="spinBtn">开始抽取</button>
     <button class="auto-spin-btn" id="autoSpinBtn">自动抽取全部</button>
 </div>
-
 <div class="result" id="resText"></div>
 <div class="record" id="recordWrap">
     <h3>📋 本局抽取结果</h3>
@@ -518,206 +515,157 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 <div id="copyTip"></div>
 <div class="tips"></div>
 <script>
-// =====================【全部物品权重集中在这里修改！简单易懂】=====================
-/*
-权重说明：
-数字越大抽到概率越高；基准=1；设置0=不会抽出来
-例："M4A1突击步枪": 5  代表M4概率是普通物品(1)的5倍
-★重要：权重对【初级/中级/高级/命运】全部模式生效，不只是命运模式
-*/
-const ALL_ITEM_WEIGHTS = {
-    // --------武器权重--------
-    "M4A1突击步枪": 2,
-    "MDR突击步枪": 2,
-    "RM277突击步枪": 2,
-    "K416突击步枪": 2,
-    "AKM突击步枪": 2,
-    "KC17": 2,
-    "AK-12突击步枪": 2,
-    "SCAR-H战斗步枪": 2,
-    "腾龙突击步枪": 2,
-    "QBZ-95-1": 2,
-    "AUG突击步枪": 2,
-    "G3战斗步枪": 2,
-    "ASh-12战斗步枪":0.5,
-    "AS‑Val巨浪":0.1,
-    "M7战斗步枪":0.1,
-    "Vector冲锋枪":2,
-    "P90冲锋枪":2,
-    "汤姆逊冲锋枪":2,
-    "MP5冲锋枪":2,
-    "MP7冲锋枪":2,
-    "UZI冲锋枪":1.5,
-    "野牛冲锋枪":1.5,
-    "QCQ171冲锋枪":2,
-    "SVCH精确射手步枪":2,
-    "Mini-14":2,
-    "SVD射手步枪":2,
-    "SKS射手步枪":2,
-    "VSS射手步枪":2,
-    "SV-98狙击枪":2,
-    "R93狙击枪":2,
-    "M700狙击枪":2,
-    "复合弓":1,
-    "M14":0.5,
-    "PKM通用机枪":2,
-    "M249轻机枪":2,
-    "QJB-201机枪":2,
-    "M250通用机枪":0.1,
-    "M870霰弹枪":1.5,
-    "FS-12霰弹枪":2,
-    "M1014霰弹枪":2,
-    "S12K霰弹枪":2,
-    "725双管霰弹枪":2,
-    "G18手枪":1,
-    "沙漠之鹰":1,
-    "93R手枪":1,
-    ".357左轮":1,
+// ==============================================
+// ✅【唯一物品配置区，只在这里修改！】
+// 格式：
+// "物品名称": { weight:权重, type:分类, category:武器子分类(武器才填), sub:干员副标题(干员才填) }
+// weight：数字越大概率越高；0=不会抽出；基准=1
+// type可选值：weapon / helmet / armor / operator / map
+// category武器：rifle步枪,smg冲锋枪,shotgun霰弹,sniper狙击,lmg机枪,pistol手枪
+// ==============================================
+const ITEM_POOL = {
+    // -----武器-----
+    "M4A1突击步枪": { weight:2, type:"weapon", category:"rifle" },
+    "MDR突击步枪": { weight:2, type:"weapon", category:"rifle" },
+    "RM277突击步枪": { weight:2, type:"weapon", category:"rifle" },
+    "K416突击步枪": { weight:2, type:"weapon", category:"rifle" },
+    "AKM突击步枪": { weight:2, type:"weapon", category:"rifle" },
+    "KC17": { weight:2, type:"weapon", category:"rifle" },
+    "AK-12突击步枪": { weight:2, type:"weapon", category:"rifle" },
+    "SCAR-H战斗步枪": { weight:2, type:"weapon", category:"rifle" },
+    "腾龙突击步枪": { weight:2, type:"weapon", category:"rifle" },
+    "QBZ-95-1": { weight:2, type:"weapon", category:"rifle" },
+    "AUG突击步枪": { weight:2, type:"weapon", category:"rifle" },
+    "G3战斗步枪": { weight:2, type:"weapon", category:"rifle" },
+    "ASh-12战斗步枪": { weight:0.5, type:"weapon", category:"rifle" },
+    "AS‑Val巨浪": { weight:0.1, type:"weapon", category:"rifle" },
+    "M7战斗步枪": { weight:0.1, type:"weapon", category:"rifle" },
+
+    "Vector冲锋枪": { weight:2, type:"weapon", category:"smg" },
+    "P90冲锋枪": { weight:2, type:"weapon", category:"smg" },
+    "汤姆逊冲锋枪": { weight:2, type:"weapon", category:"smg" },
+    "MP5冲锋枪": { weight:2, type:"weapon", category:"smg" },
+    "MP7冲锋枪": { weight:2, type:"weapon", category:"smg" },
+    "UZI冲锋枪": { weight:1.5, type:"weapon", category:"smg" },
+    "野牛冲锋枪": { weight:1.5, type:"weapon", category:"smg" },
+    "QCQ171冲锋枪": { weight:2, type:"weapon", category:"smg" },
+
+    "SVCH精确射手步枪": { weight:2, type:"weapon", category:"sniper" },
+    "Mini-14": { weight:2, type:"weapon", category:"sniper" },
+    "SVD射手步枪": { weight:2, type:"weapon", category:"sniper" },
+    "SKS射手步枪": { weight:2, type:"weapon", category:"sniper" },
+    "VSS射手步枪": { weight:2, type:"weapon", category:"sniper" },
+    "SV-98狙击枪": { weight:2, type:"weapon", category:"sniper" },
+    "R93狙击枪": { weight:2, type:"weapon", category:"sniper" },
+    "M700狙击枪": { weight:2, type:"weapon", category:"sniper" },
+    "复合弓": { weight:1, type:"weapon", category:"sniper" },
+    "M14": { weight:0.5, type:"weapon", category:"sniper" },
+
+    "PKM通用机枪": { weight:2, type:"weapon", category:"lmg" },
+    "M249轻机枪": { weight:2, type:"weapon", category:"lmg" },
+    "QJB-201机枪": { weight:2, type:"weapon", category:"lmg" },
+    "M250通用机枪": { weight:0.1, type:"weapon", category:"lmg" },
+
+    "M870霰弹枪": { weight:1.5, type:"weapon", category:"shotgun" },
+    "FS-12霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
+    "M1014霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
+    "S12K霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
+    "725双管霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
+
+    "G18手枪": { weight:1, type:"weapon", category:"pistol" },
+    "沙漠之鹰": { weight:1, type:"weapon", category:"pistol" },
+    "93R手枪": { weight:1, type:"weapon", category:"pistol" },
+    ".357左轮": { weight:1, type:"weapon", category:"pistol" },
+
     //扩展武器库
-    "SR-25射手步枪":2,
-    "巴雷特":1,
-    "AWM狙击枪":1,
-    // --------头盔权重--------
-    "老式钢盔(1级)":1,
-    "安保头盔(1级)":1,
-    "奔尼帽(1级)":1,
-    "户外棒球帽(1级)":1,
-    "H01战术头盔(2级)":1,
-    "DRO战术头盔(2级)":1,
-    "复古摩托头盔(2级)":1,
-    "MC 防弹头盔(2级)":1,
-    "防暴头盔(3级)":3,
-    "DAS 防弹头盔(3级)":3,
-    "H07战术头盔(3级)":3,
-    "MC201防弹头盔(3级)":3.5,
-    "D6 战术头盔(4级)":0.5,
-    "MHS战术头盔(4级)":0.5,
-    "GT1战术头盔(4级)":0.6,
-    "DICH训练头盔(4级)":0.6,
-    "Mask-1铁壁头盔(5级)":0.2,
-    "H09 防暴头盔(5级)":0.2,
-    "GN 重型头盔(5级)":0.2,
-    "GN久战重型夜视头盔(5级)":0.1,
-    "DICH-1战术头盔(5级)":0.2,
-    "GN 重型夜视头盔(5级)":0.1,
-    "不要头【我很猛】":0.4, //彩蛋头盔
-    // --------护甲权重--------
-    "摩托马甲(1级)":1,
-    "安保防弹衣(1级)":1,
-    "轻型防弹衣(1级)":1,
-    "简易防刺服(2级)":1,
-    "TG战术防弹衣(2级)":1,
-    "通用战术背心(2级)":1,
-    "Hvk快拆防弹衣(3级)":1,
-    "制式防弹背心(3级)":3,
-    "TG-H防弹衣(3级)":3.5,
-    "射手战术背心(3级)":3.5,
-    "武士防弹背心(4级)":0.5,
-    "突击手防弹背心(4级)":0.5,
-    "DT-AVS防弹衣(4级)":0.5,
-    "HMP特勤防弹衣(4级)":0.5,
-    "MK-2战术背心(4级)":0.5,
-    "Hvk-2防弹衣(5级)":0.2,
-    "精英防弹背心(5级)":0.2,
-    "FS复合防弹衣(5级)":0.2,
-    "重型突击背心(5级)":0.2,
-    "不要甲【我很猛】":0.4, //彩蛋护甲
-    // --------干员权重--------
-    "红狼":1,
-    "无名":1,
-    "威龙":1,
-    "疾风":1,
-    "牧羊人":1,
-    "液氮":1,
-    "乌鲁鲁":1,
-    "深蓝":1,
-    "比特":1,
-    "蜂医":1,
-    "旅人":1,
-    "蛊":1,
-    "蝶":1,
-    "露娜":1,
-    "银翼":1,
-    "骇爪":1,
-    // --------地图权重--------
-    "零号大坝-机密":1,
-    "长弓溪谷-机密":1,
-    "巴克什-机密":1,
-    "航天基地-机密":1,
-    "AZ3核电站-机密":1,
-    "巴克什-绝密":0.8,
-    "航天基地-绝密":0.8,
-    "潮汐监狱-绝密":0.8
+    "SR-25射手步枪": { weight:2, type:"weapon", category:"sniper" },
+    "巴雷特": { weight:1, type:"weapon", category:"sniper" },
+    "AWM狙击枪": { weight:1, type:"weapon", category:"sniper" },
+
+    // -----头盔-----
+    "老式钢盔(1级)":{weight:1,type:"helmet"},
+    "安保头盔(1级)":{weight:1,type:"helmet"},
+    "奔尼帽(1级)":{weight:1,type:"helmet"},
+    "户外棒球帽(1级)":{weight:1,type:"helmet"},
+    "H01战术头盔(2级)":{weight:1,type:"helmet"},
+    "DRO战术头盔(2级)":{weight:1,type:"helmet"},
+    "复古摩托头盔(2级)":{weight:1,type:"helmet"},
+    "MC 防弹头盔(2级)":{weight:1,type:"helmet"},
+    "防暴头盔(3级)":{weight:3,type:"helmet"},
+    "DAS 防弹头盔(3级)":{weight:3,type:"helmet"},
+    "H07战术头盔(3级)":{weight:3,type:"helmet"},
+    "MC201防弹头盔(3级)":{weight:3.5,type:"helmet"},
+    "D6 战术头盔(4级)":{weight:0.5,type:"helmet"},
+    "MHS战术头盔(4级)":{weight:0.5,type:"helmet"},
+    "GT1战术头盔(4级)":{weight:0.6,type:"helmet"},
+    "DICH训练头盔(4级)":{weight:0.6,type:"helmet"},
+    "Mask-1铁壁头盔(5级)":{weight:0.2,type:"helmet"},
+    "H09 防暴头盔(5级)":{weight:0.2,type:"helmet"},
+    "GN 重型头盔(5级)":{weight:0.2,type:"helmet"},
+    "GN久战重型夜视头盔(5级)":{weight:0.1,type:"helmet"},
+    "DICH-1战术头盔(5级)":{weight:0.2,type:"helmet"},
+    "GN 重型夜视头盔(5级)":{weight:0.1,type:"helmet"},
+    "不要头【我很猛】":{weight:0.4,type:"helmet"},
+
+    // -----护甲-----
+    "摩托马甲(1级)":{weight:1,type:"armor"},
+    "安保防弹衣(1级)":{weight:1,type:"armor"},
+    "轻型防弹衣(1级)":{weight:1,type:"armor"},
+    "简易防刺服(2级)":{weight:1,type:"armor"},
+    "TG战术防弹衣(2级)":{weight:1,type:"armor"},
+    "通用战术背心(2级)":{weight:1,type:"armor"},
+    "Hvk快拆防弹衣(3级)":{weight:1,type:"armor"},
+    "制式防弹背心(3级)":{weight:3,type:"armor"},
+    "TG-H防弹衣(3级)":{weight:3.5,type:"armor"},
+    "射手战术背心(3级)":{weight:3.5,type:"armor"},
+    "武士防弹背心(4级)":{weight:0.5,type:"armor"},
+    "突击手防弹背心(4级)":{weight:0.5,type:"armor"},
+    "DT-AVS防弹衣(4级)":{weight:0.5,type:"armor"},
+    "HMP特勤防弹衣(4级)":{weight:0.5,type:"armor"},
+    "MK-2战术背心(4级)":{weight:0.5,type:"armor"},
+    "Hvk-2防弹衣(5级)":{weight:0.2,type:"armor"},
+    "精英防弹背心(5级)":{weight:0.2,type:"armor"},
+    "FS复合防弹衣(5级)":{weight:0.2,type:"armor"},
+    "重型突击背心(5级)":{weight:0.2,type:"armor"},
+    "不要甲【我很猛】":{weight:0.4,type:"armor"},
+
+    // -----干员-----
+    "红狼":{weight:1,type:"operator", sub:"凯·席尔瓦 | 突击"},
+    "无名":{weight:1,type:"operator", sub:"埃利·德·蒙贝尔 | 突击"},
+    "威龙":{weight:1,type:"operator", sub:"王宇吴 | 突击"},
+    "疾风":{weight:1,type:"operator", sub:"克莱尔·安·拜尔斯 | 突击"},
+    "牧羊人":{weight:1,type:"operator", sub:"泰瑞·缪萨 | 工程"},
+    "液氮":{weight:1,type:"operator", sub:"加布里埃尔·默里尔 | 工程"},
+    "乌鲁鲁":{weight:1,type:"operator", sub:"大卫·费莱尔 | 工程"},
+    "深蓝":{weight:1,type:"operator", sub:"阿列克谢 | 工程"},
+    "比特":{weight:1,type:"operator", sub:"拉希德 | 工程"},
+    "蜂医":{weight:1,type:"operator", sub:"罗伊·斯米 | 支援"},
+    "蛊":{weight:1,type:"operator", sub:"佐娅 | 支援"},
+    "蝶":{weight:1,type:"operator", sub:"莉娜 | 支援"},
+    "旅人":{weight:1,type:"operator", sub:"罗温·沃尔什 | 支援"},
+    "露娜":{weight:1,type:"operator", sub:"金卢娜 | 侦查"},
+    "银翼":{weight:1,type:"operator", sub:"兰登 | 侦查"},
+    "骇爪":{weight:1,type:"operator", sub:"麦晓雯 | 侦查"},
+
+    // -----地图-----
+    "零号大坝-机密":{weight:1,type:"map"},
+    "长弓溪谷-机密":{weight:1,type:"map"},
+    "巴克什-机密":{weight:1,type:"map"},
+    "航天基地-机密":{weight:1,type:"map"},
+    "AZ3核电站-机密":{weight:1,type:"map"},
+    "巴克什-绝密":{weight:0.8,type:"map"},
+    "航天基地-绝密":{weight:0.8,type:"map"},
+    "潮汐监狱-绝密":{weight:0.8,type:"map"},
 };
-// 全局动画配置
-const DRAW_CONFIG = {
-    repeatPenalty: 0.3, //上一次抽到的物品本次权重乘0.3，防止连续重复
-    stopOffsetRange: [-45,45], // 停止随机偏移像素，正负，不要每次都正中
-    bounceChance: 0.2, //普通向前窜动概率
-    bounceDistanceRange: [50,100], //普通前窜距离px
-    bounceDuration: 450, //窜动动画时长
-    bigJumpChance:0.1, //小概率大段向前窜动（会跳过物品）
-    bigJumpRange:[150,300], //大跳像素范围
-    //=====回弹配置（只有不触发任何向前窜动才会走回弹）=====
-    springChance:0.2, //总回弹触发概率
-    springBigChance:0.1, //回弹里面触发【大回弹】的概率
-    springSmallRange:[30,75], //小回弹距离
-    springBigRange:[60,120], //大回弹一大段距离
-    springDuration:420
-};
-// ==============================================================
-const weaponList = [
-    {name:"M4A1突击步枪", category:"rifle"},
-    {name:"MDR突击步枪", category:"rifle"},
-    {name:"RM277突击步枪", category:"rifle"},
-    {name:"K416突击步枪", category:"rifle"},
-    {name:"AKM突击步枪", category:"rifle"},
-    {name:"KC17", category:"rifle"},
-    {name:"AK-12突击步枪", category:"rifle"},
-    {name:"SCAR-H战斗步枪", category:"rifle"},
-    {name:"腾龙突击步枪", category:"rifle"},
-    {name:"QBZ-95-1", category:"rifle"},
-    {name:"AUG突击步枪", category:"rifle"},
-    {name:"G3战斗步枪", category:"rifle"},
-    {name:"ASh-12战斗步枪", category:"rifle"},
-    {name:"AS‑Val巨浪", category:"rifle"},
-    {name:"M7战斗步枪", category:"rifle"},
-    {name:"Vector冲锋枪", category:"smg"},
-    {name:"P90冲锋枪", category:"smg"},
-    {name:"MP5冲锋枪", category:"smg"},
-    {name:"MP7冲锋枪", category:"smg"},
-    {name:"UZI冲锋枪", category:"smg"},
-    {name:"汤姆逊冲锋枪", category:"smg"},
-    {name:"野牛冲锋枪", category:"smg"},
-    {name:"QCQ171冲锋枪", category:"smg"},
-    {name:"SVCH精确射手步枪", category:"sniper"},
-    {name:"Mini-14", category:"sniper"},
-    {name:"SVD射手步枪", category:"sniper"},
-    {name:"SKS射手步枪", category:"sniper"},
-    {name:"VSS射手步枪", category:"sniper"},
-    {name:"SV-98狙击枪", category:"sniper"},
-    {name:"R93狙击枪", category:"sniper"},
-    {name:"M700狙击枪", category:"sniper"},
-    {name:"复合弓", category:"sniper"},
-    {name:"M14", category:"sniper"},
-    {name:"PKM通用机枪", category:"lmg"},
-    {name:"M249轻机枪", category:"lmg"},
-    {name:"QJB-201机枪", category:"lmg"},
-    {name:"M870霰弹枪", category:"shotgun"},
-    {name:"FS-12霰弹枪", category:"shotgun"},
-    {name:"M1014霰弹枪", category:"shotgun"},
-    {name:"S12K霰弹枪", category:"shotgun"},
-    {name:"725双管霰弹枪", category:"shotgun"},
-    {name:"G18手枪", category:"pistol"},
-    {name:"沙漠之鹰", category:"pistol"},
-    {name:"93R手枪", category:"pistol"},
-    {name:".357左轮", category:"pistol"}
-];
-const extraWeaponList = [
-    {name:"SR-25射手步枪", category:"sniper"},
-    {name:"巴雷特", category:"sniper"},
-    {name:"AWM狙击枪", category:"sniper"}
-];
+
+// ✅自动生成权重字典（旧逻辑兼容，不需要手动维护ALL_ITEM_WEIGHTS）
+const ALL_ITEM_WEIGHTS = {};
+// ✅自动生成业务数组（武器、头盔、护甲、干员，不再手写两套）
+const weaponList = [];
+const extraWeaponList = [];
+const operatorList = [];
+
+// 头盔池配置（物品名称写在这里，等级分组，只写名字，权重从ITEM_POOL读取）
 const helmetPool = {
     easy: [
         "老式钢盔(1级)","安保头盔(1级)","奔尼帽(1级)","户外棒球帽(1级)",
@@ -754,30 +702,50 @@ const armorPool = {
     fate: [],
     egg:["不要甲【我很猛】"]
 };
+
+// =========自动构建所有数组（只需要维护上面ITEM_POOL，这里不用动）=========
+for(const name in ITEM_POOL){
+    const meta = ITEM_POOL[name];
+    ALL_ITEM_WEIGHTS[name] = meta.weight;
+    if(meta.type === "weapon"){
+        // 判断是否属于扩展武器
+        const isExtra = ["SR-25射手步枪","巴雷特","AWM狙击枪"].includes(name);
+        const obj = {name, category: meta.category};
+        if(isExtra){
+            extraWeaponList.push(obj);
+        }else{
+            weaponList.push(obj);
+        }
+    }
+    if(meta.type === "operator"){
+        operatorList.push({name, sub: meta.sub});
+    }
+}
+
 (function buildFatePool(){
     const allHelmets = new Set([...helmetPool.easy, ...helmetPool.mid, ...helmetPool.hard,...helmetPool.egg]);
     helmetPool.fate = Array.from(allHelmets);
     const allArmors = new Set([...armorPool.easy, ...armorPool.mid, ...armorPool.hard,...armorPool.egg]);
     armorPool.fate = Array.from(allArmors);
 })();
-const operatorList = [
-    {name:"红狼", sub:"凯·席尔瓦 | 突击"},
-    {name:"无名", sub:"埃利·德·蒙贝尔 | 突击"},
-    {name:"威龙", sub:"王宇吴 | 突击"},
-    {name:"疾风", sub:"克莱尔·安·拜尔斯 | 突击"},
-    {name:"牧羊人", sub:"泰瑞·缪萨 | 工程"},
-    {name:"液氮", sub:"加布里埃尔·默里尔 | 工程"},
-    {name:"乌鲁鲁", sub:"大卫·费莱尔 | 工程"},
-    {name:"深蓝", sub:"阿列克谢 | 工程"},
-    {name:"比特", sub:"拉希德 | 工程"},
-    {name:"蜂医", sub:"罗伊·斯米 | 支援"},
-    {name:"蛊", sub:"佐娅 | 支援"},
-    {name:"蝶", sub:"莉娜 | 支援"},
-    {name:"旅人", sub:"罗温·沃尔什 | 支援"},
-    {name:"露娜", sub:"金卢娜 | 侦查"},
-    {name:"银翼", sub:"兰登 | 侦查"},
-    {name:"骇爪", sub:"麦晓雯 | 侦查"}十
-];
+
+// 全局动画配置
+const DRAW_CONFIG = {
+    repeatPenalty: 0.3, //上一次抽到的物品本次权重乘0.3，防止连续重复
+    stopOffsetRange: [-45,45], // 停止随机偏移像素，正负，不要每次都正中
+    bounceChance: 0.2, //普通向前窜动概率
+    bounceDistanceRange: [50,100], //普通前窜距离px
+    bounceDuration: 450, //窜动动画时长
+    bigJumpChance:0.1, //小概率大段向前窜动（会跳过物品）
+    bigJumpRange:[150,300], //大跳像素范围
+    //=====回弹配置（只有不触发任何向前窜动才会走回弹）=====
+    springChance:0.2, //总回弹触发概率
+    springBigChance:0.1, //回弹里面触发【大回弹】的概率
+    springSmallRange:[30,75], //小回弹距离
+    springBigRange:[60,120], //大回弹一大段距离
+    springDuration:420
+};
+
 const mapSourcePool = {
     secret: ["零号大坝","长弓溪谷","巴克什","航天基地","AZ3核电站"],
     top: ["巴克什","航天基地","潮汐监狱"]
