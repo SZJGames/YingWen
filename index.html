@@ -528,6 +528,7 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 const ALL_ITEM_WEIGHTS = {
     // --------武器权重--------
     "M4A1突击步枪": 2,
+    "MDR突击步枪": 2,
     "RM277突击步枪": 2,
     "K416突击步枪": 2,
     "AKM突击步枪": 2,
@@ -543,6 +544,7 @@ const ALL_ITEM_WEIGHTS = {
     "M7战斗步枪":0.1,
     "Vector冲锋枪":2,
     "P90冲锋枪":2,
+    "汤姆逊冲锋枪":2,
     "MP5冲锋枪":2,
     "MP7冲锋枪":2,
     "UZI冲锋枪":1.5,
@@ -631,6 +633,7 @@ const ALL_ITEM_WEIGHTS = {
     "深蓝":1,
     "比特":1,
     "蜂医":1,
+    "旅人":1,
     "蛊":1,
     "蝶":1,
     "露娜":1,
@@ -665,6 +668,7 @@ const DRAW_CONFIG = {
 // ==============================================================
 const weaponList = [
     {name:"M4A1突击步枪", category:"rifle"},
+    {name:"MDR突击步枪", category:"rifle"},
     {name:"RM277突击步枪", category:"rifle"},
     {name:"K416突击步枪", category:"rifle"},
     {name:"AKM突击步枪", category:"rifle"},
@@ -683,6 +687,7 @@ const weaponList = [
     {name:"MP5冲锋枪", category:"smg"},
     {name:"MP7冲锋枪", category:"smg"},
     {name:"UZI冲锋枪", category:"smg"},
+    {name:"汤姆逊冲锋枪", category:"smg"},
     {name:"野牛冲锋枪", category:"smg"},
     {name:"QCQ171冲锋枪", category:"smg"},
     {name:"SVCH精确射手步枪", category:"sniper"},
@@ -768,9 +773,10 @@ const operatorList = [
     {name:"蜂医", sub:"罗伊·斯米 | 支援"},
     {name:"蛊", sub:"佐娅 | 支援"},
     {name:"蝶", sub:"莉娜 | 支援"},
+    {name:"旅人", sub:"罗温·沃尔什 | 支援"},
     {name:"露娜", sub:"金卢娜 | 侦查"},
     {name:"银翼", sub:"兰登 | 侦查"},
-    {name:"骇爪", sub:"麦晓雯 | 侦查"}
+    {name:"骇爪", sub:"麦晓雯 | 侦查"}十
 ];
 const mapSourcePool = {
     secret: ["零号大坝","长弓溪谷","巴克什","航天基地","AZ3核电站"],
