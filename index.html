@@ -540,7 +540,6 @@ const ITEM_POOL = {
     "ASh-12战斗步枪": { weight:0.5, type:"weapon", category:"rifle" },
     "AS‑Val巨浪": { weight:0.1, type:"weapon", category:"rifle" },
     "M7战斗步枪": { weight:0.1, type:"weapon", category:"rifle" },
-
     "Vector冲锋枪": { weight:2, type:"weapon", category:"smg" },
     "P90冲锋枪": { weight:2, type:"weapon", category:"smg" },
     "汤姆逊冲锋枪": { weight:2, type:"weapon", category:"smg" },
@@ -549,7 +548,6 @@ const ITEM_POOL = {
     "UZI冲锋枪": { weight:1.5, type:"weapon", category:"smg" },
     "野牛冲锋枪": { weight:1.5, type:"weapon", category:"smg" },
     "QCQ171冲锋枪": { weight:2, type:"weapon", category:"smg" },
-
     "SVCH精确射手步枪": { weight:2, type:"weapon", category:"sniper" },
     "Mini-14": { weight:2, type:"weapon", category:"sniper" },
     "SVD射手步枪": { weight:2, type:"weapon", category:"sniper" },
@@ -560,28 +558,23 @@ const ITEM_POOL = {
     "M700狙击枪": { weight:2, type:"weapon", category:"sniper" },
     "复合弓": { weight:1, type:"weapon", category:"sniper" },
     "M14": { weight:0.5, type:"weapon", category:"sniper" },
-
     "PKM通用机枪": { weight:2, type:"weapon", category:"lmg" },
     "M249轻机枪": { weight:2, type:"weapon", category:"lmg" },
     "QJB-201机枪": { weight:2, type:"weapon", category:"lmg" },
     "M250通用机枪": { weight:0.1, type:"weapon", category:"lmg" },
-
     "M870霰弹枪": { weight:1.5, type:"weapon", category:"shotgun" },
     "FS-12霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
     "M1014霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
     "S12K霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
     "725双管霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
-
     "G18手枪": { weight:1, type:"weapon", category:"pistol" },
     "沙漠之鹰": { weight:1, type:"weapon", category:"pistol" },
     "93R手枪": { weight:1, type:"weapon", category:"pistol" },
     ".357左轮": { weight:1, type:"weapon", category:"pistol" },
-
     //扩展武器库
     "SR-25射手步枪": { weight:2, type:"weapon", category:"sniper" },
     "巴雷特": { weight:1, type:"weapon", category:"sniper" },
     "AWM狙击枪": { weight:1, type:"weapon", category:"sniper" },
-
     // -----头盔-----
     "老式钢盔(1级)":{weight:1,type:"helmet"},
     "安保头盔(1级)":{weight:1,type:"helmet"},
@@ -606,7 +599,6 @@ const ITEM_POOL = {
     "DICH-1战术头盔(5级)":{weight:0.2,type:"helmet"},
     "GN 重型夜视头盔(5级)":{weight:0.1,type:"helmet"},
     "不要头【我很猛】":{weight:0.4,type:"helmet"},
-
     // -----护甲-----
     "摩托马甲(1级)":{weight:1,type:"armor"},
     "安保防弹衣(1级)":{weight:1,type:"armor"},
@@ -628,7 +620,6 @@ const ITEM_POOL = {
     "FS复合防弹衣(5级)":{weight:0.2,type:"armor"},
     "重型突击背心(5级)":{weight:0.2,type:"armor"},
     "不要甲【我很猛】":{weight:0.4,type:"armor"},
-
     // -----干员-----
     "红狼":{weight:1,type:"operator", sub:"凯·席尔瓦 | 突击"},
     "无名":{weight:1,type:"operator", sub:"埃利·德·蒙贝尔 | 突击"},
@@ -646,7 +637,6 @@ const ITEM_POOL = {
     "露娜":{weight:1,type:"operator", sub:"金卢娜 | 侦查"},
     "银翼":{weight:1,type:"operator", sub:"兰登 | 侦查"},
     "骇爪":{weight:1,type:"operator", sub:"麦晓雯 | 侦查"},
-
     // -----地图-----
     "零号大坝-机密":{weight:1,type:"map"},
     "长弓溪谷-机密":{weight:1,type:"map"},
@@ -657,7 +647,6 @@ const ITEM_POOL = {
     "航天基地-绝密":{weight:0.8,type:"map"},
     "潮汐监狱-绝密":{weight:0.8,type:"map"},
 };
-
 // ✅自动生成权重字典（旧逻辑兼容，不需要手动维护ALL_ITEM_WEIGHTS）
 const ALL_ITEM_WEIGHTS = {};
 // ✅自动生成业务数组（武器、头盔、护甲、干员，不再手写两套）
@@ -665,45 +654,18 @@ const weaponList = [];
 const extraWeaponList = [];
 const operatorList = [];
 
-// 头盔池配置（物品名称写在这里，等级分组，只写名字，权重从ITEM_POOL读取）
-const helmetPool = {
-    easy: [
-        "老式钢盔(1级)","安保头盔(1级)","奔尼帽(1级)","户外棒球帽(1级)",
-        "H01战术头盔(2级)","DRO战术头盔(2级)","复古摩托头盔(2级)","MC 防弹头盔(2级)",
-        "防暴头盔(3级)","DAS 防弹头盔(3级)","H07战术头盔(3级)","MC201防弹头盔(3级)"
-    ],
-    mid: [
-        "防暴头盔(3级)","DAS 防弹头盔(3级)","H07战术头盔(3级)","MC201防弹头盔(3级)",
-        "D6 战术头盔(4级)","MHS战术头盔(4级)","GT1战术头盔(4级)","DICH训练头盔(4级)"
-    ],
-    hard: [
-        "防暴头盔(3级)","DAS 防弹头盔(3级)","H07战术头盔(3级)","MC201防弹头盔(3级)",
-        "D6 战术头盔(4级)","MHS战术头盔(4级)","GT1战术头盔(4级)","DICH训练头盔(4级)",
-        "Mask-1铁壁头盔(5级)","H09 防暴头盔(5级)","GN 重型头盔(5级)","GN久战重型夜视头盔(5级)","DICH-1战术头盔(5级)","GN 重型夜视头盔(5级)"
-    ],
-    fate: [],
-    egg:["不要头【我很猛】"]
-};
-const armorPool = {
-    easy: [
-        "摩托马甲(1级)","安保防弹衣(1级)","轻型防弹衣(1级)",
-        "简易防刺服(2级)","TG战术防弹衣(2级)","通用战术背心(2级)",
-        "Hvk快拆防弹衣(3级)","制式防弹背心(3级)","TG-H防弹衣(3级)","射手战术背心(3级)"
-    ],
-    mid: [
-        "Hvk快拆防弹衣(3级)","制式防弹背心(3级)","TG-H防弹衣(3级)","射手战术背心(3级)",
-        "武士防弹背心(4级)","突击手防弹背心(4级)","DT-AVS防弹衣(4级)","HMP特勤防弹衣(4级)","MK-2战术背心(4级)"
-    ],
-    hard: [
-        "Hvk快拆防弹衣(3级)","制式防弹背心(3级)","TG-H防弹衣(3级)","射手战术背心(3级)",
-        "武士防弹背心(4级)","突击手防弹背心(4级)","DT-AVS防弹衣(4级)","HMP特勤防弹衣(4级)","MK-2战术背心(4级)",
-        "Hvk-2防弹衣(5级)","精英防弹背心(5级)","FS复合防弹衣(5级)","重型突击背心(5级)"
-    ],
-    fate: [],
-    egg:["不要甲【我很猛】"]
-};
+// =========自动构建所有数组【删除手写helmetPool/armorPool，从ITEM_POOL动态生成】=========
+// 解析等级数字，从名称里抓 (x级)
+function parseLevel(name){
+    const m = name.match(/\((\d+)级\)/);
+    return m ? Number(m[1]) : null;
+}
 
-// =========自动构建所有数组（只需要维护上面ITEM_POOL，这里不用动）=========
+// 头盔池对象，运行时动态填充
+const helmetPool = { easy:[], mid:[], hard:[], fate:[], egg:[] };
+// 护甲池对象，运行时动态填充
+const armorPool = { easy:[], mid:[], hard:[], fate:[], egg:[] };
+
 for(const name in ITEM_POOL){
     const meta = ITEM_POOL[name];
     ALL_ITEM_WEIGHTS[name] = meta.weight;
@@ -719,6 +681,33 @@ for(const name in ITEM_POOL){
     }
     if(meta.type === "operator"){
         operatorList.push({name, sub: meta.sub});
+    }
+
+    // 动态生成头盔池
+    if(meta.type === "helmet"){
+        if(name.includes("不要头")){
+            helmetPool.egg.push(name);
+        }else{
+            const lv = parseLevel(name);
+            if(lv!==null){
+                if(lv>=1 && lv<=3) helmetPool.easy.push(name);
+                if(lv>=3 && lv<=4) helmetPool.mid.push(name);
+                if(lv>=3 && lv<=5) helmetPool.hard.push(name);
+            }
+        }
+    }
+    // 动态生成护甲池
+    if(meta.type === "armor"){
+        if(name.includes("不要甲")){
+            armorPool.egg.push(name);
+        }else{
+            const lv = parseLevel(name);
+            if(lv!==null){
+                if(lv>=1 && lv<=3) armorPool.easy.push(name);
+                if(lv>=3 && lv<=4) armorPool.mid.push(name);
+                if(lv>=3 && lv<=5) armorPool.hard.push(name);
+            }
+        }
     }
 }
 
@@ -745,7 +734,6 @@ const DRAW_CONFIG = {
     springBigRange:[60,120], //大回弹一大段距离
     springDuration:420
 };
-
 const mapSourcePool = {
     secret: ["零号大坝","长弓溪谷","巴克什","航天基地","AZ3核电站"],
     top: ["巴克什","航天基地","潮汐监狱"]
