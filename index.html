@@ -518,11 +518,10 @@ h1 span:nth-child(14){ font-size:48px; color:#ff4400; }
 // ==============================================
 // ✅【唯一物品配置区，只在这里修改！】
 // 格式：
-// "物品名称": { weight:权重, type:分类, category:武器子分类(武器才填), sub:干员副标题(干员才填), level:头盔护甲品级(头盔护甲才填) }
+// "物品名称": { weight:权重, type:分类, category:武器子分类(武器才填), sub:干员副标题(干员才填) }
 // weight：数字越大概率越高；0=不会抽出；基准=1
 // type可选值：weapon / helmet / armor / operator / map
 // category武器：rifle步枪,smg冲锋枪,shotgun霰弹,sniper狙击,lmg机枪,pistol手枪
-// level头盔护甲："1","2","3","4","5"；特殊无甲无头填"egg"
 // ==============================================
 const ITEM_POOL = {
     // -----武器-----
@@ -541,6 +540,7 @@ const ITEM_POOL = {
     "ASh-12战斗步枪": { weight:0.5, type:"weapon", category:"rifle" },
     "AS‑Val巨浪": { weight:0.1, type:"weapon", category:"rifle" },
     "M7战斗步枪": { weight:0.1, type:"weapon", category:"rifle" },
+
     "Vector冲锋枪": { weight:2, type:"weapon", category:"smg" },
     "P90冲锋枪": { weight:2, type:"weapon", category:"smg" },
     "汤姆逊冲锋枪": { weight:2, type:"weapon", category:"smg" },
@@ -549,6 +549,7 @@ const ITEM_POOL = {
     "UZI冲锋枪": { weight:1.5, type:"weapon", category:"smg" },
     "野牛冲锋枪": { weight:1.5, type:"weapon", category:"smg" },
     "QCQ171冲锋枪": { weight:2, type:"weapon", category:"smg" },
+
     "SVCH精确射手步枪": { weight:2, type:"weapon", category:"sniper" },
     "Mini-14": { weight:2, type:"weapon", category:"sniper" },
     "SVD射手步枪": { weight:2, type:"weapon", category:"sniper" },
@@ -559,68 +560,75 @@ const ITEM_POOL = {
     "M700狙击枪": { weight:2, type:"weapon", category:"sniper" },
     "复合弓": { weight:1, type:"weapon", category:"sniper" },
     "M14": { weight:0.5, type:"weapon", category:"sniper" },
+
     "PKM通用机枪": { weight:2, type:"weapon", category:"lmg" },
     "M249轻机枪": { weight:2, type:"weapon", category:"lmg" },
     "QJB-201机枪": { weight:2, type:"weapon", category:"lmg" },
     "M250通用机枪": { weight:0.1, type:"weapon", category:"lmg" },
+
     "M870霰弹枪": { weight:1.5, type:"weapon", category:"shotgun" },
     "FS-12霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
     "M1014霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
     "S12K霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
     "725双管霰弹枪": { weight:2, type:"weapon", category:"shotgun" },
+
     "G18手枪": { weight:1, type:"weapon", category:"pistol" },
     "沙漠之鹰": { weight:1, type:"weapon", category:"pistol" },
     "93R手枪": { weight:1, type:"weapon", category:"pistol" },
     ".357左轮": { weight:1, type:"weapon", category:"pistol" },
+
     //扩展武器库
     "SR-25射手步枪": { weight:2, type:"weapon", category:"sniper" },
     "巴雷特": { weight:1, type:"weapon", category:"sniper" },
     "AWM狙击枪": { weight:1, type:"weapon", category:"sniper" },
+
     // -----头盔-----
-    "老式钢盔(1级)":{weight:1,type:"helmet", level:"1"},
-    "安保头盔(1级)":{weight:1,type:"helmet", level:"1"},
-    "奔尼帽(1级)":{weight:1,type:"helmet", level:"1"},
-    "户外棒球帽(1级)":{weight:1,type:"helmet", level:"1"},
-    "H01战术头盔(2级)":{weight:1,type:"helmet", level:"2"},
-    "DRO战术头盔(2级)":{weight:1,type:"helmet", level:"2"},
-    "复古摩托头盔(2级)":{weight:1,type:"helmet", level:"2"},
-    "MC 防弹头盔(2级)":{weight:1,type:"helmet", level:"2"},
-    "防暴头盔(3级)":{weight:3,type:"helmet", level:"3"},
-    "DAS 防弹头盔(3级)":{weight:3,type:"helmet", level:"3"},
-    "H07战术头盔(3级)":{weight:3,type:"helmet", level:"3"},
-    "MC201防弹头盔(3级)":{weight:3.5,type:"helmet", level:"3"},
-    "D6 战术头盔(4级)":{weight:0.5,type:"helmet", level:"4"},
-    "MHS战术头盔(4级)":{weight:0.5,type:"helmet", level:"4"},
-    "GT1战术头盔(4级)":{weight:0.6,type:"helmet", level:"4"},
-    "DICH训练头盔(4级)":{weight:0.6,type:"helmet", level:"4"},
-    "Mask-1铁壁头盔(5级)":{weight:0.2,type:"helmet", level:"5"},
-    "H09 防暴头盔(5级)":{weight:0.2,type:"helmet", level:"5"},
-    "GN 重型头盔(5级)":{weight:0.2,type:"helmet", level:"5"},
-    "GN久战重型夜视头盔(5级)":{weight:0.1,type:"helmet", level:"5"},
-    "DICH-1战术头盔(5级)":{weight:0.2,type:"helmet", level:"5"},
-    "GN 重型夜视头盔(5级)":{weight:0.1,type:"helmet", level:"5"},
-    "不要头【我很猛】":{weight:0.4,type:"helmet", level:"egg"},
+    "老式钢盔(1级)":{weight:1,type:"helmet"},
+    "安保头盔(1级)":{weight:1,type:"helmet"},
+    "奔尼帽(1级)":{weight:1,type:"helmet"},
+    "户外棒球帽(1级)":{weight:1,type:"helmet"},
+    "H01战术头盔(2级)":{weight:1,type:"helmet"},
+    "DRO战术头盔(2级)":{weight:1,type:"helmet"},
+    "复古摩托头盔(2级)":{weight:1,type:"helmet"},
+    "MC 防弹头盔(2级)":{weight:1,type:"helmet"},
+    "防暴头盔(3级)":{weight:3,type:"helmet"},
+    "DAS 防弹头盔(3级)":{weight:3,type:"helmet"},
+    "H07战术头盔(3级)":{weight:3,type:"helmet"},
+    "MC201防弹头盔(3级)":{weight:3.5,type:"helmet"},
+    "D6 战术头盔(4级)":{weight:0.5,type:"helmet"},
+    "MHS战术头盔(4级)":{weight:0.5,type:"helmet"},
+    "GT1战术头盔(4级)":{weight:0.6,type:"helmet"},
+    "DICH训练头盔(4级)":{weight:0.6,type:"helmet"},
+    "Mask-1铁壁头盔(5级)":{weight:0.2,type:"helmet"},
+    "H09 防暴头盔(5级)":{weight:0.2,type:"helmet"},
+    "GN 重型头盔(5级)":{weight:0.2,type:"helmet"},
+    "GN久战重型夜视头盔(5级)":{weight:0.1,type:"helmet"},
+    "DICH-1战术头盔(5级)":{weight:0.2,type:"helmet"},
+    "GN 重型夜视头盔(5级)":{weight:0.1,type:"helmet"},
+    "不要头【我很猛】":{weight:0.4,type:"helmet"},
+
     // -----护甲-----
-    "摩托马甲(1级)":{weight:1,type:"armor", level:"1"},
-    "安保防弹衣(1级)":{weight:1,type:"armor", level:"1"},
-    "轻型防弹衣(1级)":{weight:1,type:"armor", level:"1"},
-    "简易防刺服(2级)":{weight:1,type:"armor", level:"2"},
-    "TG战术防弹衣(2级)":{weight:1,type:"armor", level:"2"},
-    "通用战术背心(2级)":{weight:1,type:"armor", level:"2"},
-    "Hvk快拆防弹衣(3级)":{weight:1,type:"armor", level:"3"},
-    "制式防弹背心(3级)":{weight:3,type:"armor", level:"3"},
-    "TG-H防弹衣(3级)":{weight:3.5,type:"armor", level:"3"},
-    "射手战术背心(3级)":{weight:3.5,type:"armor", level:"3"},
-    "武士防弹背心(4级)":{weight:0.5,type:"armor", level:"4"},
-    "突击手防弹背心(4级)":{weight:0.5,type:"armor", level:"4"},
-    "DT-AVS防弹衣(4级)":{weight:0.5,type:"armor", level:"4"},
-    "HMP特勤防弹衣(4级)":{weight:0.5,type:"armor", level:"4"},
-    "MK-2战术背心(4级)":{weight:0.5,type:"armor", level:"4"},
-    "Hvk-2防弹衣(5级)":{weight:0.2,type:"armor", level:"5"},
-    "精英防弹背心(5级)":{weight:0.2,type:"armor", level:"5"},
-    "FS复合防弹衣(5级)":{weight:0.2,type:"armor", level:"5"},
-    "重型突击背心(5级)":{weight:0.2,type:"armor", level:"5"},
-    "不要甲【我很猛】":{weight:0.4,type:"armor", level:"egg"},
+    "摩托马甲(1级)":{weight:1,type:"armor"},
+    "安保防弹衣(1级)":{weight:1,type:"armor"},
+    "轻型防弹衣(1级)":{weight:1,type:"armor"},
+    "简易防刺服(2级)":{weight:1,type:"armor"},
+    "TG战术防弹衣(2级)":{weight:1,type:"armor"},
+    "通用战术背心(2级)":{weight:1,type:"armor"},
+    "Hvk快拆防弹衣(3级)":{weight:1,type:"armor"},
+    "制式防弹背心(3级)":{weight:3,type:"armor"},
+    "TG-H防弹衣(3级)":{weight:3.5,type:"armor"},
+    "射手战术背心(3级)":{weight:3.5,type:"armor"},
+    "武士防弹背心(4级)":{weight:0.5,type:"armor"},
+    "突击手防弹背心(4级)":{weight:0.5,type:"armor"},
+    "DT-AVS防弹衣(4级)":{weight:0.5,type:"armor"},
+    "HMP特勤防弹衣(4级)":{weight:0.5,type:"armor"},
+    "MK-2战术背心(4级)":{weight:0.5,type:"armor"},
+    "Hvk-2防弹衣(5级)":{weight:0.2,type:"armor"},
+    "精英防弹背心(5级)":{weight:0.2,type:"armor"},
+    "FS复合防弹衣(5级)":{weight:0.2,type:"armor"},
+    "重型突击背心(5级)":{weight:0.2,type:"armor"},
+    "不要甲【我很猛】":{weight:0.4,type:"armor"},
+
     // -----干员-----
     "红狼":{weight:1,type:"operator", sub:"凯·席尔瓦 | 突击"},
     "无名":{weight:1,type:"operator", sub:"埃利·德·蒙贝尔 | 突击"},
@@ -638,6 +646,7 @@ const ITEM_POOL = {
     "露娜":{weight:1,type:"operator", sub:"金卢娜 | 侦查"},
     "银翼":{weight:1,type:"operator", sub:"兰登 | 侦查"},
     "骇爪":{weight:1,type:"operator", sub:"麦晓雯 | 侦查"},
+
     // -----地图-----
     "零号大坝-机密":{weight:1,type:"map"},
     "长弓溪谷-机密":{weight:1,type:"map"},
@@ -648,13 +657,53 @@ const ITEM_POOL = {
     "航天基地-绝密":{weight:0.8,type:"map"},
     "潮汐监狱-绝密":{weight:0.8,type:"map"},
 };
+
 // ✅自动生成权重字典（旧逻辑兼容，不需要手动维护ALL_ITEM_WEIGHTS）
 const ALL_ITEM_WEIGHTS = {};
+// ✅自动生成业务数组（武器、头盔、护甲、干员，不再手写两套）
 const weaponList = [];
 const extraWeaponList = [];
 const operatorList = [];
 
-// =========自动构建基础数组（只维护上面ITEM_POOL，这里不用动）=========
+// 头盔池配置（物品名称写在这里，等级分组，只写名字，权重从ITEM_POOL读取）
+const helmetPool = {
+    easy: [
+        "老式钢盔(1级)","安保头盔(1级)","奔尼帽(1级)","户外棒球帽(1级)",
+        "H01战术头盔(2级)","DRO战术头盔(2级)","复古摩托头盔(2级)","MC 防弹头盔(2级)",
+        "防暴头盔(3级)","DAS 防弹头盔(3级)","H07战术头盔(3级)","MC201防弹头盔(3级)"
+    ],
+    mid: [
+        "防暴头盔(3级)","DAS 防弹头盔(3级)","H07战术头盔(3级)","MC201防弹头盔(3级)",
+        "D6 战术头盔(4级)","MHS战术头盔(4级)","GT1战术头盔(4级)","DICH训练头盔(4级)"
+    ],
+    hard: [
+        "防暴头盔(3级)","DAS 防弹头盔(3级)","H07战术头盔(3级)","MC201防弹头盔(3级)",
+        "D6 战术头盔(4级)","MHS战术头盔(4级)","GT1战术头盔(4级)","DICH训练头盔(4级)",
+        "Mask-1铁壁头盔(5级)","H09 防暴头盔(5级)","GN 重型头盔(5级)","GN久战重型夜视头盔(5级)","DICH-1战术头盔(5级)","GN 重型夜视头盔(5级)"
+    ],
+    fate: [],
+    egg:["不要头【我很猛】"]
+};
+const armorPool = {
+    easy: [
+        "摩托马甲(1级)","安保防弹衣(1级)","轻型防弹衣(1级)",
+        "简易防刺服(2级)","TG战术防弹衣(2级)","通用战术背心(2级)",
+        "Hvk快拆防弹衣(3级)","制式防弹背心(3级)","TG-H防弹衣(3级)","射手战术背心(3级)"
+    ],
+    mid: [
+        "Hvk快拆防弹衣(3级)","制式防弹背心(3级)","TG-H防弹衣(3级)","射手战术背心(3级)",
+        "武士防弹背心(4级)","突击手防弹背心(4级)","DT-AVS防弹衣(4级)","HMP特勤防弹衣(4级)","MK-2战术背心(4级)"
+    ],
+    hard: [
+        "Hvk快拆防弹衣(3级)","制式防弹背心(3级)","TG-H防弹衣(3级)","射手战术背心(3级)",
+        "武士防弹背心(4级)","突击手防弹背心(4级)","DT-AVS防弹衣(4级)","HMP特勤防弹衣(4级)","MK-2战术背心(4级)",
+        "Hvk-2防弹衣(5级)","精英防弹背心(5级)","FS复合防弹衣(5级)","重型突击背心(5级)"
+    ],
+    fate: [],
+    egg:["不要甲【我很猛】"]
+};
+
+// =========自动构建所有数组（只需要维护上面ITEM_POOL，这里不用动）=========
 for(const name in ITEM_POOL){
     const meta = ITEM_POOL[name];
     ALL_ITEM_WEIGHTS[name] = meta.weight;
@@ -673,47 +722,12 @@ for(const name in ITEM_POOL){
     }
 }
 
-// 【删除原来静态 helmetPool / armorPool，改为动态获取函数】
-function getFilteredHelmetPool(mode){
-    const pool = [];
-    for(const name in ITEM_POOL){
-        const item = ITEM_POOL[name];
-        if(item.type !== "helmet") continue;
-        const lv = item.level;
-        let ok = false;
-        if(mode === "easy"){
-            if(["1","2","3","egg"].includes(lv)) ok = true;
-        }else if(mode === "mid"){
-            if(["3","4","egg"].includes(lv)) ok = true;
-        }else if(mode === "hard"){
-            if(["3","4","5","egg"].includes(lv)) ok = true;
-        }else if(mode === "fate"){
-            ok = true;
-        }
-        if(ok) pool.push(name);
-    }
-    return pool;
-}
-function getFilteredArmorPool(mode){
-    const pool = [];
-    for(const name in ITEM_POOL){
-        const item = ITEM_POOL[name];
-        if(item.type !== "armor") continue;
-        const lv = item.level;
-        let ok = false;
-        if(mode === "easy"){
-            if(["1","2","3","egg"].includes(lv)) ok = true;
-        }else if(mode === "mid"){
-            if(["3","4","egg"].includes(lv)) ok = true;
-        }else if(mode === "hard"){
-            if(["3","4","5","egg"].includes(lv)) ok = true;
-        }else if(mode === "fate"){
-            ok = true;
-        }
-        if(ok) pool.push(name);
-    }
-    return pool;
-}
+(function buildFatePool(){
+    const allHelmets = new Set([...helmetPool.easy, ...helmetPool.mid, ...helmetPool.hard,...helmetPool.egg]);
+    helmetPool.fate = Array.from(allHelmets);
+    const allArmors = new Set([...armorPool.easy, ...armorPool.mid, ...armorPool.hard,...armorPool.egg]);
+    armorPool.fate = Array.from(allArmors);
+})();
 
 // 全局动画配置
 const DRAW_CONFIG = {
@@ -731,6 +745,7 @@ const DRAW_CONFIG = {
     springBigRange:[60,120], //大回弹一大段距离
     springDuration:420
 };
+
 const mapSourcePool = {
     secret: ["零号大坝","长弓溪谷","巴克什","航天基地","AZ3核电站"],
     top: ["巴克什","航天基地","潮汐监狱"]
@@ -909,14 +924,10 @@ function getCurrentPool(){
             }
             return wList.map(w => ({text: w.name, sub: '', category: w.category}));
         }
-        case 'helmet':{
-            const names = getFilteredHelmetPool(armorMode);
-            return names.map(name => ({text: name, sub: ''}));
-        }
-        case 'armor':{
-            const names = getFilteredArmorPool(armorMode);
-            return names.map(name => ({text: name, sub: ''}));
-        }
+        case 'helmet':
+            return helmetPool[armorMode].map(name => ({text: name, sub: ''}));
+        case 'armor':
+            return armorPool[armorMode].map(name => ({text: name, sub: ''}));
         case 'operator':
             return operatorList.map(op => ({text: op.name, sub: op.sub}));
         case 'map':{
@@ -983,4 +994,185 @@ function resetAll(){
         spinBtn.disabled = true;
         autoSpinBtn.disabled = true;
     }else{
-        spin
+        spinBtn.innerText = `开始抽取（共${spinQueue.length}项）`;
+        spinBtn.disabled = false;
+        autoSpinBtn.disabled = false;
+    }
+    const pool = shuffleArray(getCurrentPool());
+    if(pool.length > 0) buildTrack(pool);
+    caseTrack.style.transition = 'none';
+    caseTrack.style.transform = 'translateX(0)';
+    updateRecord();
+    syncFateBtnState();
+}
+resetBtn.onclick = function(){
+    if(isSpinning) return;
+    resetAll();
+};
+['chk-weapon','chk-dualGun','chk-weapon-extra','chk-helmet','chk-armor','chk-operator','chk-map'].forEach(id=>{
+    document.getElementById(id).addEventListener('change', ()=>{
+        if(!isSpinning) resetAll();
+    });
+});
+document.querySelectorAll('.map-check').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+        if(!isSpinning) resetAll();
+    });
+});
+function randomRange(min,max){
+    return Math.random()*(max-min)+min;
+}
+// 解析DOM位移，结算结果公共函数
+function settleResult(current, itemWidthFull, containerWidth){
+    const itemsDom = Array.from(caseTrack.querySelectorAll('.case-item'));
+    const realTranslateX = new WebKitCSSMatrix(getComputedStyle(caseTrack).transform).m41;
+    const viewCenterPos = containerWidth / 2;
+    const trackLocalX = viewCenterPos - realTranslateX;
+    const domIndex = Math.floor(trackLocalX / itemWidthFull);
+    const finalWinDom = itemsDom[domIndex] || itemsDom[Math.max(0,Math.min(domIndex,itemsDom.length-1))];
+    let finalText = "";
+    let finalSub = "";
+    if(finalWinDom){
+        const domText = finalWinDom.innerText.replace(/\n.*/,"").trim();
+        finalText = domText;
+        const subDom = finalWinDom.querySelector('.sub');
+        finalSub = subDom ? subDom.innerText : "";
+    }
+    const winText = finalText + (finalSub ? `（${finalSub}）` : '');
+    resultSet[current.key + '_' + current.label] = winText;
+    if(current.isDualFirst){
+        const pool = getCurrentPool();
+        const foundPoolItem = pool.find(p=>p.text === finalText);
+        if(foundPoolItem) dualGunExcludeCat = foundPoolItem.category;
+    }
+    lastResult[current.key] = finalText;
+    spinIndex++;
+    updateRecord();
+    if(spinIndex < spinQueue.length){
+        const next = spinQueue[spinIndex];
+        resText.innerText = `✅${current.label}抽到：${winText}`;
+        spinBtn.innerText = `抽取${next.label}`;
+        isSpinning = false;
+        spinBtn.disabled = false;
+        autoSpinBtn.disabled = false;
+        // 自动模式：间隔一小段时间自动继续下一轮
+        if(isAutoMode){
+            autoSpinBtn.disabled = true;
+            spinBtn.disabled = true;
+            setTimeout(()=>{
+                runSpin();
+            },600);
+        }
+    }else{
+        finishAll(winText, current.label);
+    }
+}
+function runSpin(){
+    if(isSpinning) return;
+    if(spinQueue.length === 0) return;
+    if(spinIndex >= spinQueue.length){
+        resetAll();
+        return;
+    }
+    const current = spinQueue[spinIndex];
+    let pool = getCurrentPool();
+    if(pool.length === 0){
+        if(current.isDualSecond){
+            resText.innerText = "⚠️双枪模式：剩余可选武器分类为空，请多选几类武器！";
+        }else{
+            resText.innerText = "⚠️ 当前选中分类没有可用物品，请重新选择武器分类！";
+        }
+        spinIndex++;
+        if(spinIndex >= spinQueue.length){
+            finishAll();
+        }else{
+            runSpin();
+        }
+        return;
+    }
+    pool = shuffleArray(pool);
+    resText.innerText = `正在抽取${current.label}...`;
+    isSpinning = true;
+    spinBtn.disabled = true;
+    autoSpinBtn.disabled = true;
+    buildTrack(pool);
+    caseTrack.style.transition = 'none';
+    caseTrack.style.transform = 'translateX(0)';
+    caseTrack.offsetHeight;
+    weightedRandom(pool, current.key);
+    const itemEl = caseTrack.querySelector('.case-item');
+    const itemWidthFull = itemEl.offsetWidth + 12;
+    const containerWidth = caseTrack.parentElement.clientWidth;
+    const centerOffset = containerWidth / 2 - itemWidthFull / 2;
+    const randomStopOffset = randomRange(DRAW_CONFIG.stopOffsetRange[0], DRAW_CONFIG.stopOffsetRange[1]);
+    const copyIndex = REPEAT_COUNT - 3;
+    const winIndex = weightedRandom(pool, current.key);
+    const globalWinIndex = copyIndex * pool.length + winIndex;
+    let targetX = -(globalWinIndex * itemWidthFull - centerOffset) + randomStopOffset;
+    caseTrack.style.transition = `transform ${ANIM_DURATION}ms ${EASING}`;
+    requestAnimationFrame(()=>{
+        caseTrack.style.transform = `translateX(${targetX}px)`;
+    });
+    setTimeout(()=>{
+        let currentX = targetX;
+        const doBigJump = Math.random() < DRAW_CONFIG.bigJumpChance;
+        const doBounce = !doBigJump && Math.random() < DRAW_CONFIG.bounceChance;
+        // 分支1：向前窜动（普通窜动 / 大窜动），**不回弹**
+        if(doBigJump || doBounce){
+            const px = doBigJump
+                ? randomRange(DRAW_CONFIG.bigJumpRange[0], DRAW_CONFIG.bigJumpRange[1])
+                : randomRange(DRAW_CONFIG.bounceDistanceRange[0], DRAW_CONFIG.bounceDistanceRange[1]);
+            currentX -= px;
+            caseTrack.style.transition = `transform ${DRAW_CONFIG.bounceDuration}ms ease-out`;
+            caseTrack.style.transform = `translateX(${currentX}px)`;
+            setTimeout(()=>{
+                settleResult(current, itemWidthFull, containerWidth);
+            }, DRAW_CONFIG.bounceDuration);
+            return;
+        }
+        // 分支2：不向前窜动，判断是否回弹（小回弹 / 大回弹 / 不回弹）
+        const doSpring = Math.random() < DRAW_CONFIG.springChance;
+        if(doSpring){
+            const isSpringBig = Math.random() < DRAW_CONFIG.springBigChance;
+            const springPx = isSpringBig
+                ? randomRange(DRAW_CONFIG.springBigRange[0], DRAW_CONFIG.springBigRange[1])
+                : randomRange(DRAW_CONFIG.springSmallRange[0], DRAW_CONFIG.springSmallRange[1]);
+            currentX += springPx;
+            caseTrack.style.transition = `transform ${DRAW_CONFIG.springDuration}ms ease-out`;
+            caseTrack.style.transform = `translateX(${currentX}px)`;
+            setTimeout(()=>{
+                settleResult(current, itemWidthFull, containerWidth);
+            }, DRAW_CONFIG.springDuration);
+        }else{
+            // 完全不做额外动画，直接结算
+            settleResult(current, itemWidthFull, containerWidth);
+        }
+    }, ANIM_DURATION);
+}
+function finishAll(lastItem='', lastLabel=''){
+    isSpinning = false;
+    isAutoMode = false;
+    if(lastItem){
+        resText.innerText = `🎉全部抽取完成！${lastLabel}：${lastItem}，点击重新抽取`;
+    }else{
+        resText.innerText = `🎉全部抽取完成！点击重新抽取`;
+    }
+    spinBtn.innerText = "重新抽取";
+    spinBtn.disabled = false;
+    autoSpinBtn.disabled = false;
+}
+// 普通单步抽取
+spinBtn.addEventListener('click', runSpin);
+// 一键全部自动抽取
+autoSpinBtn.addEventListener('click',function(){
+    if(isSpinning) return;
+    if(spinIndex >= spinQueue.length){
+        resetAll();
+    }
+    isAutoMode = true;
+    runSpin();
+});
+resetAll();
+</script>
+</body>
+</html>
